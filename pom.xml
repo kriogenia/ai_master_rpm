@@ -27,6 +27,12 @@
             <artifactId>SimpleEvolutionaryAlgorithm</artifactId>
             <version>a6f44d491bad7fc0ba66ffd8a5fc55373e434e93</version>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
