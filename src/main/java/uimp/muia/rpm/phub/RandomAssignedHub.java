@@ -1,10 +1,10 @@
 package uimp.muia.rpm.phub;
 
-import es.uma.informatica.misia.ae.simpleea.Problem;
+import uimp.muia.rpm.GenericProblem;
 
 import java.util.*;
 
-public class RandomAssignedHub implements Problem {
+public class RandomAssignedHub extends GenericProblem<RandomAssignedHub.Individual> {
 
     private final SubProblem scenario;
     private final NodesProperties costs;
@@ -17,8 +17,17 @@ public class RandomAssignedHub implements Problem {
     }
 
     @Override
-    public double evaluate(es.uma.informatica.misia.ae.simpleea.Individual individual) {
-        return 0;
+    protected double eval(Individual individual) {
+        var n = scenario.n();
+        var totalShippingsCost = 0.0;
+        for (var i = 0; i < n; i++) {
+            for (var j = 0; j < n; j++) {
+                totalShippingsCost += costToShip(individual.assignedHubs, i, j);
+            }
+        }
+        var buildingCost = individual.hubs.stream().map(costs::get).reduce(0.0, Double::sum);
+        var totalCapacity = individual.hubs.stream().map(caps::get).reduce(0.0, Double::sum);
+        return totalCapacity / (totalShippingsCost + buildingCost);
     }
 
     @Override
@@ -26,13 +35,30 @@ public class RandomAssignedHub implements Problem {
         return new Individual(scenario.n()).randomize(random);
     }
 
-    // VisibleForTest
-    static class Individual extends es.uma.informatica.misia.ae.simpleea.Individual {
+    // visible for testing
+    double costToShip(Byte[] assignedHubs, int from, int to) {
+        var fromAssignedHub = assignedHubs[from];
+        var toAssignedHub = assignedHubs[to];
+        // todo calculate distances
+        var collectCost = scenario.flows()[from][fromAssignedHub] * scenario.collectionCost();
+        var transferCost = scenario.flows()[fromAssignedHub][toAssignedHub] * scenario.transferCost();
+        var deliveryCost = scenario.flows()[toAssignedHub][to] * scenario.distributionCost();
+        return collectCost + transferCost + deliveryCost;
+    }
 
+    static public class Individual extends es.uma.informatica.misia.ae.simpleea.Individual {
+
+        List<Byte> hubs;
         final Byte[] assignedHubs;
 
         Individual(int size) {
+            this.hubs = new ArrayList<>();
             this.assignedHubs = new Byte[size];
+        }
+
+        Individual(Byte[] assignedHubs) {
+            this.assignedHubs = assignedHubs;
+            this.hubs = Arrays.stream(assignedHubs).distinct().toList();
         }
 
         Individual randomize(Random random) {
@@ -42,12 +68,12 @@ public class RandomAssignedHub implements Problem {
             while (uniqueHubs.size() < target) {
                 uniqueHubs.add((byte) random.nextInt(assignedHubs.length));
             }
-            var hubs = uniqueHubs.toArray(Byte[]::new);
+            hubs = uniqueHubs.stream().toList();
 
             for (int i = 0; i < assignedHubs.length; i++) {
-                assignedHubs[i] = hubs[random.nextInt(target)];
+                assignedHubs[i] = hubs.get(random.nextInt(target));
             }
-            Arrays.stream(hubs).forEach(i -> assignedHubs[i] = i);
+            hubs.forEach(i -> assignedHubs[i] = i);
 
             return this;
         }

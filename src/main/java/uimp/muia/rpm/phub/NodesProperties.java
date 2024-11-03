@@ -8,11 +8,15 @@ import java.util.Objects;
 
 public record NodesProperties(
         Type type,
-        Double[] costs
+        Double[] values
 ) {
 
     private static final String FCOST = "Fcost";
     private static final String CAP = "Cap";
+
+    public double get(int index) {
+        return values[index];
+    }
 
     public static NodesProperties costs(Type type, int size) throws URISyntaxException, IOException {
         return load(FCOST, type, size);
