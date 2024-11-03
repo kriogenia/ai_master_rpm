@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,8 +24,8 @@ class RandomAssignedHubTest {
         var hubs = rand.nextInt(nodes);
         rand.setSeed(SEED);
 
-        var scenario = new PHub(new PHub.Coordinates[nodes], new Double[nodes][nodes], 3, 1.0, 1.0, 1.0);
-        var rah = new RandomAssignedHub(scenario);
+        var scenario = new SubProblem(new SubProblem.Coordinates[nodes], new Double[nodes][nodes], 3, 1.0, 1.0, 1.0);
+        var rah = new RandomAssignedHub(scenario, null);
         var individual = (RandomAssignedHub.Individual) rah.generateRandomIndividual(rand);
 
         assertEquals(nodes, individual.assignedHubs.length);

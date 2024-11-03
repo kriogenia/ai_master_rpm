@@ -5,7 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
-public record PHub(
+public record SubProblem(
         Coordinates[] nodes,
         Double[][] flows,
         int hubs,
@@ -18,18 +18,18 @@ public record PHub(
         return nodes.length;
     }
 
-    public static PHub fromFile(Path path) throws IOException {
+    public static SubProblem fromFile(Path path) throws IOException {
         var lines = Files.readAllLines(path);
 
         var numNodes = Integer.parseInt(lines.getFirst());
         var nodes = lines.stream().skip(1).limit(numNodes).map(Coordinates::parse).toArray(Coordinates[]::new);
         var flows = lines.stream().skip(1 + numNodes).limit(numNodes)
-                .map(PHub::parseDoubles)
+                .map(SubProblem::parseDoubles)
                 .toArray(Double[][]::new);
         var hubs = Integer.parseInt(lines.get(1 + 2 * numNodes));
         var rest = lines.stream().skip(2 + 2L * numNodes).map(Double::parseDouble).iterator();
 
-        return new PHub(nodes, flows, hubs, rest.next(), rest.next(), rest.next());
+        return new SubProblem(nodes, flows, hubs, rest.next(), rest.next(), rest.next());
     }
 
     private static Double[] parseDoubles(String line) {

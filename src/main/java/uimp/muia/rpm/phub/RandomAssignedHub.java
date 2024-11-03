@@ -6,10 +6,12 @@ import java.util.*;
 
 public class RandomAssignedHub implements Problem {
 
-    private final PHub scenario;
+    private final SubProblem scenario;
+    private final FCost costs;
 
-    public RandomAssignedHub(PHub scenario) {
+    public RandomAssignedHub(SubProblem scenario, FCost costs) {
         this.scenario = scenario;
+        this.costs = costs;
     }
 
     @Override

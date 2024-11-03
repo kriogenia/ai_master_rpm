@@ -7,14 +7,14 @@ import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class PHubTest {
+class SubProblemTest {
 
     private static final double DELTA = 0.001;
 
     @Test
     void fromFile() throws Exception {
         var uri = Objects.requireNonNull(getClass().getClassLoader().getResource("20.3.txt")).toURI();
-        var phub = PHub.fromFile(Path.of(uri));
+        var phub = SubProblem.fromFile(Path.of(uri));
         assertEquals(20, phub.n());
         assertEquals(12944.330389, phub.nodes()[0].x(), DELTA);
         assertEquals(19522.690462, phub.nodes()[0].y(), DELTA);
