@@ -1,13 +1,9 @@
 package uimp.muia.rpm.phub;
 
-import es.uma.informatica.misia.ae.simpleea.Individual;
-import es.uma.informatica.misia.ae.simpleea.Problem;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Random;
 
 public record PHub(
         Coordinates[] nodes,
@@ -16,7 +12,7 @@ public record PHub(
         double collectionCost,
         double transferCost,
         double distributionCost
-) implements Problem {
+) {
 
     public int n() {
         return nodes.length;
@@ -38,16 +34,6 @@ public record PHub(
 
     private static Double[] parseDoubles(String line) {
         return Arrays.stream(line.split(" ")).map(Double::parseDouble).toArray(Double[]::new);
-    }
-
-    @Override
-    public double evaluate(Individual individual) {
-        throw new RuntimeException("Not implemented yet");
-    }
-
-    @Override
-    public Individual generateRandomIndividual(Random random) {
-        throw new RuntimeException("Not implemented yet");
     }
 
     record Coordinates(double x, double y) {
