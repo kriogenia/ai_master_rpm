@@ -20,3 +20,6 @@ replay_pid*
 
 # Idea files
 .idea/
+
+# References
+**/phub1.txt
