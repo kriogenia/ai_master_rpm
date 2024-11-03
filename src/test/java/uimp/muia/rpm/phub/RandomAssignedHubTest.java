@@ -25,7 +25,7 @@ class RandomAssignedHubTest {
         rand.setSeed(SEED);
 
         var scenario = new SubProblem(new SubProblem.Coordinates[nodes], new Double[nodes][nodes], 3, 1.0, 1.0, 1.0);
-        var rah = new RandomAssignedHub(scenario, null);
+        var rah = new RandomAssignedHub(scenario, null, null);
         var individual = (RandomAssignedHub.Individual) rah.generateRandomIndividual(rand);
 
         assertEquals(nodes, individual.assignedHubs.length);
