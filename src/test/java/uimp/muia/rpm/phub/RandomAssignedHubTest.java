@@ -25,9 +25,9 @@ class RandomAssignedHubTest {
 
     @Test
     void generateRandomIndividual() {
-        var hubs = rand.nextInt(NODES);
+        var hubs = rand.nextInt(NODES) + 1;
         rand.setSeed(SEED);
-        var individual = (RandomAssignedHub.Individual) rah.generateRandomIndividual(rand);
+        var individual = rah.generateRandomIndividual(rand);
 
         assertEquals(NODES, individual.assignedHubs.length);
         assertTrue(Arrays.stream(individual.assignedHubs).allMatch(x -> x <= NODES));

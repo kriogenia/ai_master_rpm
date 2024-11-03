@@ -1,10 +1,10 @@
 package uimp.muia.rpm.phub;
 
-import uimp.muia.rpm.GenericProblem;
+import uimp.muia.rpm.Problem;
 
 import java.util.*;
 
-public class RandomAssignedHub extends GenericProblem<RandomAssignedHub.Individual> {
+public class RandomAssignedHub implements Problem<RandomAssignedHub.Individual> {
 
     private final SubProblem scenario;
     private final NodesProperties costs;
@@ -17,7 +17,7 @@ public class RandomAssignedHub extends GenericProblem<RandomAssignedHub.Individu
     }
 
     @Override
-    protected double eval(Individual individual) {
+    public double evaluate(Individual individual) {
         var n = scenario.n();
         var totalShippingsCost = 0.0;
         for (var i = 0; i < n; i++) {
@@ -31,7 +31,7 @@ public class RandomAssignedHub extends GenericProblem<RandomAssignedHub.Individu
     }
 
     @Override
-    public es.uma.informatica.misia.ae.simpleea.Individual generateRandomIndividual(Random random) {
+    public Individual generateRandomIndividual(Random random) {
         return new Individual(scenario.n()).randomize(random);
     }
 
@@ -46,23 +46,26 @@ public class RandomAssignedHub extends GenericProblem<RandomAssignedHub.Individu
         return collectCost + transferCost + deliveryCost;
     }
 
-    static public class Individual extends es.uma.informatica.misia.ae.simpleea.Individual {
+    static public class Individual implements uimp.muia.rpm.Individual {
 
+        double fitness;
         List<Byte> hubs;
         final Byte[] assignedHubs;
 
         Individual(int size) {
+            this.fitness = 0;
             this.hubs = new ArrayList<>();
             this.assignedHubs = new Byte[size];
         }
 
         Individual(Byte[] assignedHubs) {
+            this.fitness = 0;
             this.assignedHubs = assignedHubs;
             this.hubs = Arrays.stream(assignedHubs).distinct().toList();
         }
 
         Individual randomize(Random random) {
-            var target = random.nextInt(assignedHubs.length);
+            var target = random.nextInt(assignedHubs.length) + 1;
 
             var uniqueHubs = new HashSet<Byte>();
             while (uniqueHubs.size() < target) {
@@ -80,7 +83,17 @@ public class RandomAssignedHub extends GenericProblem<RandomAssignedHub.Individu
 
         @Override
         public String toString() {
-            return "%s -> %f".formatted(Arrays.toString(assignedHubs), super.fitness);
+            return "%s -> %f".formatted(Arrays.toString(assignedHubs), this.fitness);
+        }
+
+        @Override
+        public void fitness(double fitness) {
+            this.fitness = fitness;
+        }
+
+        @Override
+        public double fitness() {
+            return fitness;
         }
     }
 
