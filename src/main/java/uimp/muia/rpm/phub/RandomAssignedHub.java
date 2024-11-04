@@ -10,6 +10,8 @@ public class RandomAssignedHub implements Problem<RandomAssignedHub.Individual> 
     private final NodesProperties costs;
     private final NodesProperties caps;
 
+    private Random random;
+
     public RandomAssignedHub(SubProblem scenario, NodesProperties costs, NodesProperties caps) {
         this.scenario = scenario;
         this.costs = costs;
@@ -31,8 +33,13 @@ public class RandomAssignedHub implements Problem<RandomAssignedHub.Individual> 
     }
 
     @Override
-    public Individual generateRandomIndividual(Random random) {
+    public Individual generateRandomIndividual() {
         return new Individual(scenario.n()).randomize(random);
+    }
+
+    @Override
+    public void setRandom(Random random) {
+        this.random = random;
     }
 
     // visible for testing

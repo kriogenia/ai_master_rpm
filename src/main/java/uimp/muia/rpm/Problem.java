@@ -8,9 +8,9 @@ import java.util.Random;
  *
  * @param <I> Individual
  */
-public interface Problem<I extends Individual> {
+public interface Problem<I extends Individual> extends Stochastic {
 
     double evaluate(I individual);
-    I generateRandomIndividual(Random random);
+    I generateRandomIndividual();
 
 }
