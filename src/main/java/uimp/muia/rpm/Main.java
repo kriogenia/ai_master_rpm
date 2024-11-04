@@ -3,6 +3,7 @@ package uimp.muia.rpm;
 import uimp.muia.rpm.phub.NodesProperties;
 import uimp.muia.rpm.phub.RandomAssignedHub;
 import uimp.muia.rpm.phub.SubProblem;
+import uimp.muia.rpm.selection.BinaryTournament;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -21,7 +22,11 @@ public class Main {
         var caps = NodesProperties.capacities(NodesProperties.Type.LOOSE, 10);
         var problem = new RandomAssignedHub(phub, costs, caps);
 
-        var ea = new EvolutionaryAlgorithm.Builder<>(problem).build();
+        var ea = new EvolutionaryAlgorithm.Builder<>(problem)
+                // todo add configurations
+                .withSeed(123L)
+                .withSelector(new BinaryTournament<>())
+                .build();
         var best = ea.run();
         System.out.printf("BEST SOLUTION FOUND: %s", best);
     }

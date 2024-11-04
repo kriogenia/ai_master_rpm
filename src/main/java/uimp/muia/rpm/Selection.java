@@ -1,9 +1,9 @@
 package uimp.muia.rpm;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface Selection<I extends Individual> extends Stochastic {
 
-    I selectParent(Collection<I> individuals);
+    I selectParent(List<I> individuals);
 
 }

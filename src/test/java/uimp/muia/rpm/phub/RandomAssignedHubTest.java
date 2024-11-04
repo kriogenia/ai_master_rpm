@@ -21,13 +21,15 @@ class RandomAssignedHubTest {
     @BeforeEach
     void setUp() {
         rand.setSeed(SEED);
+        rah.setRandom(rand);
     }
 
     @Test
     void generateRandomIndividual() {
         var hubs = rand.nextInt(NODES) + 1;
         rand.setSeed(SEED);
-        var individual = rah.generateRandomIndividual(rand);
+        rah.setRandom(rand);
+        var individual = rah.generateRandomIndividual();
 
         assertEquals(NODES, individual.assignedHubs.length);
         assertTrue(Arrays.stream(individual.assignedHubs).allMatch(x -> x <= NODES));
