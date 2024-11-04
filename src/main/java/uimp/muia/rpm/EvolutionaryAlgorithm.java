@@ -1,5 +1,7 @@
 package uimp.muia.rpm;
 
+import uimp.muia.rpm.selection.BinaryTournament;
+
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -102,6 +104,7 @@ public class EvolutionaryAlgorithm<I extends Individual> {
             this.newRandom = Random::new;
             this.populationSize = 10;
             this.maxEvaluations = 1_000;
+            this.selection = new BinaryTournament<>();
         }
 
         public Builder<I> withPopulationSize(int populationSize) {

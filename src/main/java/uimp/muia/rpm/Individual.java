@@ -9,6 +9,13 @@ public interface Individual extends Comparable<Individual> {
     void fitness(double fitness);
     double fitness();
 
+    Byte[] chromosome();
+    Individual replica();
+
+    default int size() {
+        return chromosome().length;
+    }
+
     @Override
     default int compareTo(Individual o) {
         return Double.compare(fitness(), o.fitness());

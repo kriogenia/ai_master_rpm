@@ -1,5 +1,6 @@
 package uimp.muia.rpm;
 
+import uimp.muia.rpm.crossover.SinglePointCrossover;
 import uimp.muia.rpm.phub.NodesProperties;
 import uimp.muia.rpm.phub.RandomAssignedHub;
 import uimp.muia.rpm.phub.SubProblem;
@@ -26,6 +27,7 @@ public class Main {
                 // todo add configurations
                 .withSeed(123L)
                 .withSelector(new BinaryTournament<>())
+                .withCrossover(new SinglePointCrossover<>())
                 .build();
         var best = ea.run();
         System.out.printf("BEST SOLUTION FOUND: %s", best);

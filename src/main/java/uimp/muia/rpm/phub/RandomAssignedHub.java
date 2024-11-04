@@ -1,5 +1,6 @@
 package uimp.muia.rpm.phub;
 
+import uimp.muia.rpm.Individual;
 import uimp.muia.rpm.Problem;
 
 import java.util.*;
@@ -89,11 +90,6 @@ public class RandomAssignedHub implements Problem<RandomAssignedHub.Individual> 
         }
 
         @Override
-        public String toString() {
-            return "%s -> %f".formatted(Arrays.toString(assignedHubs), this.fitness);
-        }
-
-        @Override
         public void fitness(double fitness) {
             this.fitness = fitness;
         }
@@ -101,6 +97,21 @@ public class RandomAssignedHub implements Problem<RandomAssignedHub.Individual> 
         @Override
         public double fitness() {
             return fitness;
+        }
+
+        @Override
+        public Byte[] chromosome() {
+            return this.assignedHubs;
+        }
+
+        @Override
+        public Individual replica() {
+            return new Individual(this.chromosome().clone());
+        }
+
+        @Override
+        public String toString() {
+            return "%s -> %f".formatted(Arrays.toString(assignedHubs), this.fitness);
         }
     }
 
