@@ -1,5 +1,7 @@
 package uimp.muia.rpm;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uimp.muia.rpm.crossover.SinglePointCrossover;
 import uimp.muia.rpm.replacement.ElitistReplacement;
 import uimp.muia.rpm.selection.BinaryTournament;
@@ -11,6 +13,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class EvolutionaryAlgorithm<I extends Individual> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(EvolutionaryAlgorithm.class);
 
     private final Problem<I> problem;
     private final Supplier<Random> newRandom;
@@ -48,8 +52,10 @@ public class EvolutionaryAlgorithm<I extends Individual> {
         functionEvaluations = 0L;
         restartRandomness();
 
+        LOG.atInfo().log("Generating initial population");
         var population = generateInitialPopulation();
         var best = population.stream().reduce(population.getFirst(), this::evaluateIndividual);
+        LOG.atInfo().log("Selected first best solution: {}", best);
 
         while (functionEvaluations < maxFunctionEvaluations) {
             I leftParent = selection.selectParent(population);
@@ -57,7 +63,6 @@ public class EvolutionaryAlgorithm<I extends Individual> {
             I child = crossover.apply(leftParent, rightParent);
             child = mutation.apply(child);
             best = evaluateIndividual(best, child);
-            System.out.println(best);
             population = replacement.replace(population, List.of(child));
         }
 
@@ -74,8 +79,13 @@ public class EvolutionaryAlgorithm<I extends Individual> {
     private I evaluateIndividual(I best, I candidate) {
         var fitness = problem.evaluate(candidate);
         candidate.fitness(fitness);
+        LOG.trace("Evaluated individual: {}", candidate);
         functionEvaluations++;
-        return (candidate.compareTo(best) > 0) ? candidate : best;
+        if (candidate.compareTo(best) > 0) {
+            LOG.info("New best solution: {}", candidate);
+            return candidate;
+        }
+        return best;
     }
 
     private void restartRandomness() {

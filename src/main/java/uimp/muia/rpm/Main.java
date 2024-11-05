@@ -1,5 +1,7 @@
 package uimp.muia.rpm;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uimp.muia.rpm.crossover.SinglePointCrossover;
 import uimp.muia.rpm.mutation.RAHMutation;
 import uimp.muia.rpm.phub.NodesProperties;
@@ -14,8 +16,11 @@ import java.nio.file.Path;
 
 public class Main {
 
+    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+
     public static void main(String[] args) throws URISyntaxException, IOException {
-        var subproblem = Main.class.getClassLoader().getResource("subproblems/phub1_10.3.txt");
+        var file = "subproblems/phub1_10.3.txt"; // todo from args
+        var subproblem = Main.class.getClassLoader().getResource(file);
         if (subproblem == null) {
             throw new IllegalArgumentException("subproblem not found");
         }
@@ -24,6 +29,8 @@ public class Main {
         var costs = NodesProperties.costs(NodesProperties.Type.LOOSE, 10);
         var caps = NodesProperties.capacities(NodesProperties.Type.LOOSE, 10);
         var problem = new RandomAssignedHub(phub, costs, caps);
+        LOG.atInfo().log("Loaded and instantiated problem {}", file);
+
 
 //        var test = new Byte[]{ 2, 3, 2, 3, 6, 3, 6, 6, 6, 6 };
 //        var fitness = problem.evaluate(new RandomAssignedHub.Individual(test));

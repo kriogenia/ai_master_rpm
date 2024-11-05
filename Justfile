@@ -9,3 +9,6 @@ subproblem N H: build_gen
 
 run:
   @mvn compile exec:java -Dexec.mainClass="uimp.muia.rpm.Main"
+
+debug:
+  @mvn compile exec:java -Dexec.mainClass="uimp.muia.rpm.Main" -Dorg.slf4j.simpleLogger.defaultLogLevel=TRACE
