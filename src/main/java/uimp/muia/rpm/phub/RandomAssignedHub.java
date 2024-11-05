@@ -1,6 +1,5 @@
 package uimp.muia.rpm.phub;
 
-import uimp.muia.rpm.Individual;
 import uimp.muia.rpm.Problem;
 
 import java.util.*;
@@ -37,7 +36,7 @@ public class RandomAssignedHub implements Problem<RandomAssignedHub.Individual> 
     @Override
     public Individual generateRandomIndividual() {
         var size = scenario.n();
-        var target = random.nextInt(size) + 1;
+        var target = 3;//random.nextInt(size) + 1;
 
         var uniqueHubs = new HashSet<Byte>();
         while (uniqueHubs.size() < target) {
@@ -50,6 +49,7 @@ public class RandomAssignedHub implements Problem<RandomAssignedHub.Individual> 
             assignedHubs[i] = hubs[random.nextInt(target)];
         }
         Arrays.stream(hubs).forEach(i -> assignedHubs[i] = i);
+        System.out.println(Arrays.toString(assignedHubs));
         return new Individual(assignedHubs);
     }
 
@@ -62,10 +62,9 @@ public class RandomAssignedHub implements Problem<RandomAssignedHub.Individual> 
     double costToShip(Byte[] assignedHubs, int from, int to) {
         var fromAssignedHub = assignedHubs[from];
         var toAssignedHub = assignedHubs[to];
-        // todo calculate distances
-        var collectCost = scenario.flows()[from][fromAssignedHub] * scenario.collectionCost();
-        var transferCost = scenario.flows()[fromAssignedHub][toAssignedHub] * scenario.transferCost();
-        var deliveryCost = scenario.flows()[toAssignedHub][to] * scenario.distributionCost();
+        var collectCost = scenario.timeBetween(from, fromAssignedHub) * scenario.collectionCost();
+        var transferCost = scenario.timeBetween(fromAssignedHub, toAssignedHub) * scenario.transferCost();
+        var deliveryCost = scenario.timeBetween(toAssignedHub, to) * scenario.distributionCost();
         return collectCost + transferCost + deliveryCost;
     }
 

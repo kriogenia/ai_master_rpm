@@ -25,9 +25,13 @@ public class Main {
         var caps = NodesProperties.capacities(NodesProperties.Type.LOOSE, 10);
         var problem = new RandomAssignedHub(phub, costs, caps);
 
+//        var test = new Byte[]{ 2, 3, 2, 3, 6, 3, 6, 6, 6, 6 };
+//        var fitness = problem.evaluate(new RandomAssignedHub.Individual(test));
+//        System.out.println(fitness);
+
         var ea = new EvolutionaryAlgorithm.Builder<>(problem)
                 // todo add configurations
-                .withMaxEvaluations(50_000)
+                .withMaxEvaluations(1_000)
                 .withSeed(123L)
                 .withSelector(new BinaryTournament<>())
                 .withCrossover(new SinglePointCrossover<>())

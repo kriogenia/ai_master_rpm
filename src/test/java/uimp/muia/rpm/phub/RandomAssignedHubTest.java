@@ -42,20 +42,20 @@ class RandomAssignedHubTest {
     void evaluate() {
         var individual = new RandomAssignedHub.Individual(new Byte[]{1, 1, 1});
         var fitness = rah.evaluate(individual);
-        assertEquals(0.1290, fitness, DELTA);
+        assertEquals(0.062, fitness, DELTA);
     }
 
     @Test
     void costToShip() {
         var cost = rah.costToShip(new Byte[]{ 1, 1, 1 }, 0, 2);
-        assertEquals(1.0, cost, DELTA);
+        assertEquals(2.236, cost, DELTA);
     }
 
     private RandomAssignedHub newProblem() {
         var coordinates = new SubProblem.Coordinates[]{
-                new SubProblem.Coordinates(0.0, 2.0),
-                new SubProblem.Coordinates(2.0, 3.0),
-                new SubProblem.Coordinates(4.0, 4.0)
+                new SubProblem.Coordinates(0.0, 2000.0),
+                new SubProblem.Coordinates(2000.0, 3000.0),
+                new SubProblem.Coordinates(4000.0, 4000.0)
         };
         var flows = new Double[][]{
                 new Double[]{ 0.0, 1.0, 0.5 },
