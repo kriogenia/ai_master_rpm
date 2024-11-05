@@ -10,6 +10,7 @@ public interface Individual extends Comparable<Individual> {
     double fitness();
 
     Byte[] chromosome();
+    void setChromosome(Byte[] chromosome);
     Individual replica();
 
     default int size() {

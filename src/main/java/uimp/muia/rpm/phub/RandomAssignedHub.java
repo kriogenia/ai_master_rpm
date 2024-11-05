@@ -4,6 +4,7 @@ import uimp.muia.rpm.Individual;
 import uimp.muia.rpm.Problem;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 public class RandomAssignedHub implements Problem<RandomAssignedHub.Individual> {
 
@@ -35,7 +36,21 @@ public class RandomAssignedHub implements Problem<RandomAssignedHub.Individual> 
 
     @Override
     public Individual generateRandomIndividual() {
-        return new Individual(scenario.n()).randomize(random);
+        var size = scenario.n();
+        var target = random.nextInt(size) + 1;
+
+        var uniqueHubs = new HashSet<Byte>();
+        while (uniqueHubs.size() < target) {
+            uniqueHubs.add((byte) random.nextInt(size));
+        }
+        var hubs = uniqueHubs.toArray(Byte[]::new);
+
+        var assignedHubs = new Byte[size];
+        for (var i = 0; i < size; i++) {
+            assignedHubs[i] = hubs[random.nextInt(target)];
+        }
+        Arrays.stream(hubs).forEach(i -> assignedHubs[i] = i);
+        return new Individual(assignedHubs);
     }
 
     @Override
@@ -60,33 +75,10 @@ public class RandomAssignedHub implements Problem<RandomAssignedHub.Individual> 
         List<Byte> hubs;
         final Byte[] assignedHubs;
 
-        Individual(int size) {
-            this.fitness = 0;
-            this.hubs = new ArrayList<>();
-            this.assignedHubs = new Byte[size];
-        }
-
-        Individual(Byte[] assignedHubs) {
+        public Individual(Byte[] assignedHubs) {
             this.fitness = 0;
             this.assignedHubs = assignedHubs;
             this.hubs = Arrays.stream(assignedHubs).distinct().toList();
-        }
-
-        Individual randomize(Random random) {
-            var target = random.nextInt(assignedHubs.length) + 1;
-
-            var uniqueHubs = new HashSet<Byte>();
-            while (uniqueHubs.size() < target) {
-                uniqueHubs.add((byte) random.nextInt(assignedHubs.length));
-            }
-            hubs = uniqueHubs.stream().toList();
-
-            for (int i = 0; i < assignedHubs.length; i++) {
-                assignedHubs[i] = hubs.get(random.nextInt(target));
-            }
-            hubs.forEach(i -> assignedHubs[i] = i);
-
-            return this;
         }
 
         @Override
@@ -102,6 +94,12 @@ public class RandomAssignedHub implements Problem<RandomAssignedHub.Individual> 
         @Override
         public Byte[] chromosome() {
             return this.assignedHubs;
+        }
+
+        @Override
+        public void setChromosome(Byte[] chromosome) {
+            IntStream.range(0, chromosome.length).forEach(i -> this.assignedHubs[i] = chromosome[i]);
+            this.hubs = Arrays.stream(chromosome).distinct().toList();
         }
 
         @Override

@@ -82,7 +82,7 @@ public class EvolutionaryAlgorithm<I extends Individual> {
     }
 
     private List<I> generateInitialPopulation() {
-        return IntStream.of(this.populationSize).mapToObj(_x -> problem.generateRandomIndividual()).toList();
+        return IntStream.range(0, this.populationSize).mapToObj(_x -> problem.generateRandomIndividual()).toList();
     }
 
     public static class Builder<I extends Individual> {

@@ -31,6 +31,11 @@ public class TestIndividual implements Individual {
     }
 
     @Override
+    public void setChromosome(Byte[] chromosome) {
+        this.chromosome = chromosome;
+    }
+
+    @Override
     public Individual replica() {
         return new TestIndividual(chromosome);
     }
