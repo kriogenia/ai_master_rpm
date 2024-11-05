@@ -5,6 +5,7 @@ import uimp.muia.rpm.mutation.RAHMutation;
 import uimp.muia.rpm.phub.NodesProperties;
 import uimp.muia.rpm.phub.RandomAssignedHub;
 import uimp.muia.rpm.phub.SubProblem;
+import uimp.muia.rpm.replacement.ElitistReplacement;
 import uimp.muia.rpm.selection.BinaryTournament;
 
 import java.io.IOException;
@@ -26,13 +27,15 @@ public class Main {
 
         var ea = new EvolutionaryAlgorithm.Builder<>(problem)
                 // todo add configurations
+                .withMaxEvaluations(50_000)
                 .withSeed(123L)
                 .withSelector(new BinaryTournament<>())
                 .withCrossover(new SinglePointCrossover<>())
                 .withMutation(new RAHMutation(1.0 / phub.n()))
+                .withReplacement(new ElitistReplacement<>())
                 .build();
         var best = ea.run();
-        System.out.printf("BEST SOLUTION FOUND: %s", best);
+        System.out.printf("BEST SOLUTION FOUND: %s%n", best);
     }
 
 }

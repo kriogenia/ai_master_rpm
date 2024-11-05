@@ -1,6 +1,7 @@
 package uimp.muia.rpm.mutation;
 
 import uimp.muia.rpm.Mutation;
+import uimp.muia.rpm.Stochastic;
 import uimp.muia.rpm.phub.RandomAssignedHub;
 
 import java.util.Random;
@@ -9,7 +10,7 @@ import java.util.Random;
  * Mutation for the RandomAssignedHub implementation where each node can receive a
  * new random assigned hub based on a probability
  */
-public class RAHMutation implements Mutation<RandomAssignedHub.Individual> {
+public class RAHMutation implements Mutation<RandomAssignedHub.Individual>, Stochastic {
 
     private final double probability;
 
@@ -21,7 +22,7 @@ public class RAHMutation implements Mutation<RandomAssignedHub.Individual> {
     }
 
     @Override
-    public RandomAssignedHub.Individual mutate(RandomAssignedHub.Individual individual) {
+    public RandomAssignedHub.Individual apply(RandomAssignedHub.Individual individual) {
         var size = individual.size();
         var chromosome = individual.chromosome();
         for (var i = 0; i < size; i++)  {

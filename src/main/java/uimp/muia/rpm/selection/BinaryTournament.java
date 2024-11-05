@@ -2,11 +2,12 @@ package uimp.muia.rpm.selection;
 
 import uimp.muia.rpm.Individual;
 import uimp.muia.rpm.Selection;
+import uimp.muia.rpm.Stochastic;
 
 import java.util.List;
 import java.util.Random;
 
-public class BinaryTournament<I extends Individual> implements Selection<I> {
+public class BinaryTournament<I extends Individual> implements Selection<I>, Stochastic {
 
     private Random rand;
 

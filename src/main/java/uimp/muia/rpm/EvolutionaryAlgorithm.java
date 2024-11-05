@@ -1,12 +1,14 @@
 package uimp.muia.rpm;
 
+import uimp.muia.rpm.crossover.SinglePointCrossover;
+import uimp.muia.rpm.replacement.ElitistReplacement;
 import uimp.muia.rpm.selection.BinaryTournament;
 
 import java.util.List;
 import java.util.Random;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class EvolutionaryAlgorithm<I extends Individual> {
 
@@ -53,8 +55,9 @@ public class EvolutionaryAlgorithm<I extends Individual> {
             I leftParent = selection.selectParent(population);
             I rightParent = selection.selectParent(population);
             I child = crossover.apply(leftParent, rightParent);
-            child = mutation.mutate(child);
+            child = mutation.apply(child);
             best = evaluateIndividual(best, child);
+            System.out.println(best);
             population = replacement.replace(population, List.of(child));
         }
 
@@ -77,8 +80,10 @@ public class EvolutionaryAlgorithm<I extends Individual> {
 
     private void restartRandomness() {
         var rnd = newRandom.get();
-        Consumer<Stochastic> setRandom = x -> x.setRandom(rnd);
-        List.of(problem, selection, crossover, mutation, replacement).forEach(setRandom);
+        Stream.of(problem, selection, crossover, mutation, replacement)
+                .filter(Stochastic.class::isInstance)
+                .map(Stochastic.class::cast)
+                .forEach(x -> x.setRandom(rnd));
     }
 
     private List<I> generateInitialPopulation() {
@@ -93,7 +98,6 @@ public class EvolutionaryAlgorithm<I extends Individual> {
         private int populationSize;
         private int maxEvaluations;
 
-        // TODO add defaults
         private Selection<I> selection;
         private Crossover<I> crossover;
         private Mutation<I> mutation;
@@ -105,6 +109,8 @@ public class EvolutionaryAlgorithm<I extends Individual> {
             this.populationSize = 10;
             this.maxEvaluations = 1_000;
             this.selection = new BinaryTournament<>();
+            this.crossover = new SinglePointCrossover<>();
+            this.replacement = new ElitistReplacement<>();
         }
 
         public Builder<I> withPopulationSize(int populationSize) {
@@ -143,6 +149,10 @@ public class EvolutionaryAlgorithm<I extends Individual> {
         }
 
         public EvolutionaryAlgorithm<I> build() {
+            if (mutation == null) {
+                throw new IllegalStateException("The EA requires at least one Mutation, as it has default for it");
+            }
+
             return new EvolutionaryAlgorithm<>(
                     this.problem,
                     this.newRandom,

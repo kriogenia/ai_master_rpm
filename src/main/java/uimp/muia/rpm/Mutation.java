@@ -1,7 +1,7 @@
 package uimp.muia.rpm;
 
-public interface Mutation<I extends Individual> extends Stochastic {
+public interface Mutation<I extends Individual> {
 
-    I mutate(I individual);
+    I apply(I individual);
 
 }

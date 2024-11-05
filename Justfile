@@ -6,3 +6,6 @@ build_gen:
 
 subproblem N H: build_gen
   /tmp/generate_subproblem {{N}} {{H}} < /src/main/resources/or-library/phub1/APdata200 > ./src/main/resources/subproblems/phub1_{{N}}.{{H}}.txt
+
+run:
+  @mvn compile exec:java -Dexec.mainClass="uimp.muia.rpm.Main"

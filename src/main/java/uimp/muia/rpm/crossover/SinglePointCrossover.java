@@ -2,10 +2,11 @@ package uimp.muia.rpm.crossover;
 
 import uimp.muia.rpm.Crossover;
 import uimp.muia.rpm.Individual;
+import uimp.muia.rpm.Stochastic;
 
 import java.util.Random;
 
-public class SinglePointCrossover<I extends Individual> implements Crossover<I> {
+public class SinglePointCrossover<I extends Individual> implements Crossover<I>, Stochastic {
 
     private Random rand;
 
