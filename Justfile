@@ -8,7 +8,7 @@ subproblem N H: build_gen
   /tmp/generate_subproblem {{N}} {{H}} < /src/main/resources/or-library/phub1/APdata200 > ./src/main/resources/subproblems/phub1_{{N}}.{{H}}.txt
 
 run:
-  @mvn compile exec:java -Dexec.mainClass="uimp.muia.rpm.Main"
+  @mvn compile exec:java -Dexec.mainClass="uimp.muia.rpm.Run"
 
 debug:
-  @mvn compile exec:java -Dexec.mainClass="uimp.muia.rpm.Main" -Dorg.slf4j.simpleLogger.defaultLogLevel=TRACE
+  @mvn compile exec:java -Dexec.mainClass="uimp.muia.rpm.Run" -Dorg.slf4j.simpleLogger.defaultLogLevel=TRACE
