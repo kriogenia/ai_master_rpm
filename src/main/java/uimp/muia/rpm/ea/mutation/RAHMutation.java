@@ -30,8 +30,7 @@ public class RAHMutation implements Mutation<RandomAssignedHub.Individual>, Stoc
                 chromosome[i] = (byte) rand.nextInt(size);
             }
         }
-        individual.setChromosome(chromosome);
-        return individual;
+        return new RandomAssignedHub.Individual(chromosome);
     }
 
     @Override

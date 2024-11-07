@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import uimp.muia.rpm.ea.Problem;
 
 import java.util.*;
-import java.util.stream.IntStream;
 
 public class RandomAssignedHub implements Problem<RandomAssignedHub.Individual> {
 
@@ -100,12 +99,6 @@ public class RandomAssignedHub implements Problem<RandomAssignedHub.Individual> 
         @Override
         public Byte[] chromosome() {
             return this.assignedHubs;
-        }
-
-        @Override
-        public void setChromosome(Byte[] chromosome) {
-            IntStream.range(0, chromosome.length).forEach(i -> this.assignedHubs[i] = chromosome[i]);
-            this.hubs = Arrays.stream(chromosome).distinct().toList();
         }
 
         @Override

@@ -6,16 +6,21 @@
 > [!NOTE]
 > This project uses `just` (an alternative of `make`) to ease
 > the commands to execute the project. If you don't want to install
-> this, check the [Justfile](./Justfile) the commands executed by
+> this, check the [Justfile](./Justfile) for the commands executed by
 > the recipe.
 
 ## Generating problems
 
-The problems of the project are generated using
-[https://people.brunel.ac.uk/~mastjjb/jeb/orlib/files/phub1.txt].
-A new `just` recipe was created to ease the generation of new
-subproblems in the resources folder to easily run them with the
-project. To generate a new subproblem of N nodes just run:
+The problems of the project are generated using the phub problems compiled in the
+[OR-library](https://people.brunel.ac.uk/~mastjjb/jeb/orlib/phubinfo.html) of
+[J.E. Beasley](http://people.brunel.ac.uk/~mastjjb/jeb/jeb.html). Different subproblems
+can be generated from the Australian Post data with the `generate.c` file given in the
+library. To ease this just run the following recipe specifying the number of nodes and
+hubs. The generated subproblem will be placed in the resources folder where the project
+will be able to pick it.
+
+> [!NOTE]
+> The phub1 variant doesn't target
 
 ```sh
 just subproblem {N}
