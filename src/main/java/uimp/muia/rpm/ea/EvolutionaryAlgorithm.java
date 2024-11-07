@@ -3,6 +3,7 @@ package uimp.muia.rpm.ea;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uimp.muia.rpm.ea.crossover.SinglePointCrossover;
+import uimp.muia.rpm.ea.mutation.NoMutation;
 import uimp.muia.rpm.ea.replacement.ElitistReplacement;
 import uimp.muia.rpm.ea.selection.BinaryTournament;
 
@@ -120,6 +121,7 @@ public class EvolutionaryAlgorithm<I extends Individual> {
             this.maxEvaluations = 1_000;
             this.selection = new BinaryTournament<>();
             this.crossover = new SinglePointCrossover<>();
+            this.mutation = new NoMutation<>();
             this.replacement = new ElitistReplacement<>();
         }
 
@@ -159,10 +161,6 @@ public class EvolutionaryAlgorithm<I extends Individual> {
         }
 
         public EvolutionaryAlgorithm<I> build() {
-            if (mutation == null) {
-                throw new IllegalStateException("The EA requires at least one Mutation, as it has default for it");
-            }
-
             return new EvolutionaryAlgorithm<>(
                     this.problem,
                     this.newRandom,

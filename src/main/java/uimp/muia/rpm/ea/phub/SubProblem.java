@@ -10,7 +10,7 @@ public final class SubProblem {
     final Coordinates[] nodes; // visibleForTest
     private final double[][] distances;
     final Double[][] flows; // visibleForTest
-    private final int hubs;
+    private final int p;
     private final double collectionCost;
     private final double transferCost;
     private final double distributionCost;
@@ -18,14 +18,14 @@ public final class SubProblem {
     SubProblem(
             Coordinates[] nodes,
             Double[][] flows,
-            int hubs,
+            int p,
             double collectionCost,
             double transferCost,
             double distributionCost
     ) {
         this.nodes = nodes;
         this.flows = flows;
-        this.hubs = hubs;
+        this.p = p;
         this.collectionCost = collectionCost;
         this.transferCost = transferCost;
         this.distributionCost = distributionCost;
@@ -50,8 +50,8 @@ public final class SubProblem {
         return nodes.length;
     }
 
-    public int hubs() {
-        return hubs;
+    public int p() {
+        return p;
     }
 
     public double collectionCost() {

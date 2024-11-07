@@ -19,7 +19,7 @@ class SubProblemTest {
         assertEquals(12944.330389, phub.nodes[0].x(), DELTA);
         assertEquals(19522.690462, phub.nodes[0].y(), DELTA);
         assertEquals(10.396320, phub.flows[1][3], DELTA);
-        assertEquals(3, phub.hubs());
+        assertEquals(3, phub.p());
         assertEquals(3, phub.collectionCost(), DELTA);
         assertEquals(0.75, phub.transferCost(), DELTA);
         assertEquals(2, phub.distributionCost(), DELTA);

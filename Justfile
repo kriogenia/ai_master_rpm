@@ -16,5 +16,5 @@ subproblem N P: build_gen
   @{{generate}} {{N}} {{P}} < {{or-library}}/APdata200.txt > {{resources}}/subproblems/phub_{{N}}.{{P}}.txt
 
 # Runs the project in debug mode
-debug:
-  @mvn compile exec:java -Dexec.mainClass="uimp.muia.rpm.Run" -Dorg.slf4j.simpleLogger.defaultLogLevel=TRACE
+debug $MAVEN_OPTS="-ea":
+  @mvn compile exec:java -Dexec.mainClass="uimp.muia.rpm.Run" -Dexec.args="-ea" -Dorg.slf4j.simpleLogger.defaultLogLevel=TRACE

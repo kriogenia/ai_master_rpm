@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import uimp.muia.rpm.ea.Crossover;
 import uimp.muia.rpm.ea.Stochastic;
 import uimp.muia.rpm.ea.individual.FixedPAssignedHub;
-import uimp.muia.rpm.ea.phub.RandomAssignedHub;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -30,6 +29,7 @@ public class FixedPSinglePointCrossover implements Crossover<FixedPAssignedHub>,
     @Override
     public FixedPAssignedHub apply(FixedPAssignedHub left, FixedPAssignedHub right) {
         assert left.size() == right.size() && left.p() == right.p();
+        LOG.atTrace().log("Crossing {} and {}", left.chromosome(), right.chromosome());
         var size = left.size();
         var p = left.p();
 
@@ -41,7 +41,7 @@ public class FixedPSinglePointCrossover implements Crossover<FixedPAssignedHub>,
 
         // correct chromosome
         var corrected = correctChromosome(newChromosome, p).get();
-        LOG.atDebug().log("Generated child [{}] from {} and {}", corrected, left, right);
+        LOG.atDebug().log("Generated child {}", Arrays.toString(corrected));
         return new FixedPAssignedHub(p, corrected);
     }
 
@@ -72,7 +72,7 @@ public class FixedPSinglePointCrossover implements Crossover<FixedPAssignedHub>,
      */
     // Visible for testing
     Byte[] addHub(Byte[] chromosome, long missing) {
-        LOG.atTrace().log("Chromosome {} is below P, adding {} hubs", Arrays.toString(chromosome), missing);
+        LOG.atTrace().log("Child chromosome {} is below P, adding {} hubs", Arrays.toString(chromosome), missing);
         var hubs = Arrays.stream(chromosome).distinct().collect(Collectors.toCollection(ArrayList::new));
 
         for (var i = 0; i < missing; i++) {
@@ -85,7 +85,6 @@ public class FixedPSinglePointCrossover implements Crossover<FixedPAssignedHub>,
             // considering sending half the nodes of the most used node to the new one
         }
 
-        LOG.atTrace().log("Chromosome after adding hubs: {}", Arrays.toString(chromosome));
         return chromosome;
     }
 
@@ -113,7 +112,6 @@ public class FixedPSinglePointCrossover implements Crossover<FixedPAssignedHub>,
             hubs.remove(randomHub);
         };
 
-        LOG.atTrace().log("Chromosome after removing hubs: {}", Arrays.toString(chromosome));
         return chromosome;
     }
 
