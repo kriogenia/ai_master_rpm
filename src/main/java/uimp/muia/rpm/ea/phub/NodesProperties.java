@@ -27,7 +27,7 @@ public record NodesProperties(
     }
 
     static NodesProperties load(String template, Type type, int size) throws URISyntaxException, IOException {
-        var name = "or-library/phub1/%s%s.%d".formatted(template, type.code(), size);
+        var name = "or-library/phub1/%s%s.%d.txt".formatted(template, type.code(), size);
         var uri = Objects.requireNonNull(NodesProperties.class.getClassLoader().getResource(name)).toURI();
         var costs = parseFile(Path.of(uri));
         assert costs.length == size;

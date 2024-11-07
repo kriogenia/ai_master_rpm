@@ -1,14 +1,20 @@
-build_gen:
-  @if [ ! -e /tmp/generate_subproblem ]; then \
-    gcc /src/main/resources/or-library/phub1/generate.c -o /tmp/generate_subproblem; \
-    chmod +x /tmp/generate_subproblem; \
-  fi
+generate := `mktemp`
+resources := "src/main/resources"
+or-library := resources / "or-library"
 
-subproblem N H: build_gen
-  /tmp/generate_subproblem {{N}} {{H}} < /src/main/resources/or-library/phub1/APdata200 > ./src/main/resources/subproblems/phub1_{{N}}.{{H}}.txt
-
+# Runs the project with whatever problem is set by default
 run:
-  @mvn compile exec:java -Dexec.mainClass="uimp.muia.rpm.Run"
+  @mvn -q compile exec:java -Dexec.mainClass="uimp.muia.rpm.Run"
 
+# Builds the generate.c executable
+build_gen:
+  @gcc {{or-library}}/generate.c -o {{generate}}
+  @chmod +x {{generate}}
+
+# Generates a new subproblem with the given N and P
+subproblem N P: build_gen
+  @{{generate}} {{N}} {{P}} < {{or-library}}/APdata200.txt > {{resources}}/subproblems/phub_{{N}}.{{P}}.txt
+
+# Runs the project in debug mode
 debug:
   @mvn compile exec:java -Dexec.mainClass="uimp.muia.rpm.Run" -Dorg.slf4j.simpleLogger.defaultLogLevel=TRACE

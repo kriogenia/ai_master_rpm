@@ -23,7 +23,7 @@ public class Run {
     private static final Logger LOG = LoggerFactory.getLogger(Run.class);
 
     public static void main(String[] args) throws URISyntaxException, IOException {
-        var file = "subproblems/phub1_10.3.txt"; // todo from args
+        var file = "subproblems/phub_10.3.txt"; // todo from args
         var subproblem = Run.class.getClassLoader().getResource(file);
         if (subproblem == null) {
             throw new IllegalArgumentException("subproblem not found");
