@@ -7,6 +7,7 @@ import uimp.muia.rpm.ea.crossover.FixedPSinglePointCrossover;
 import uimp.muia.rpm.ea.crossover.SinglePointCrossover;
 import uimp.muia.rpm.ea.individual.FixedPAssignedHub;
 import uimp.muia.rpm.ea.mutation.RAHMutation;
+import uimp.muia.rpm.ea.mutation.ReassignHubMutation;
 import uimp.muia.rpm.ea.phub.NodesProperties;
 import uimp.muia.rpm.ea.phub.RandomAssignedHub;
 import uimp.muia.rpm.ea.phub.SubProblem;
@@ -46,12 +47,13 @@ public class Run {
 
         var ea = new EvolutionaryAlgorithm.Builder<>(problem)
                 // todo add configurations
-                .withMaxEvaluations(1_000)
-                .withSeed(124L)
+                .withMaxEvaluations(10_000)
+                .withSeed(123L)
                 .withSelector(new BinaryTournament<>())
                 .withCrossover(new FixedPSinglePointCrossover())
 //                .withCrossover(new SinglePointCrossover<>())
 //                .withMutation(new RAHMutation(1.0 / phub.n()))
+                .withMutation(new ReassignHubMutation(1.0 / phub.n()))
                 .withReplacement(new ElitistReplacement<>())
                 .build();
         var best = ea.run();

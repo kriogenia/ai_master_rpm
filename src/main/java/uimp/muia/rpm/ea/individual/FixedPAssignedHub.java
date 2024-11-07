@@ -23,7 +23,7 @@ public class FixedPAssignedHub extends BaseIndividual {
 
     @Override
     public Byte[] chromosome() {
-        return assignedHubs;
+        return assignedHubs.clone();
     }
 
     @Override

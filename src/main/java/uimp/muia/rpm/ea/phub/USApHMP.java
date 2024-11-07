@@ -40,13 +40,11 @@ public class USApHMP implements Problem<FixedPAssignedHub> {
         var n = scenario.n();
         var p = scenario.p();
 
-        Set<Integer> hubsBuffer = HashSet.newHashSet(p);
-        random.ints(0, n)
+        var hubs = random.ints(0, n)
                 .boxed()
-                .filter(Predicate.not(hubsBuffer::contains))
+                .distinct()
                 .limit(3)
-                .forEach(hubsBuffer::add);
-        var hubs = hubsBuffer.stream().toList();
+                .toList();
 
         var chromosome = new Byte[n];
         IntStream.range(0, n).forEach(i -> chromosome[i] = (byte)(int)hubs.get(random.nextInt(p)));
