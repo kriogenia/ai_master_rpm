@@ -15,6 +15,7 @@ public class ElitistReplacement<I extends Individual> implements Replacement<I> 
     public List<I> replace(List<I> population, List<I> candidates) {
         return Stream.concat(population.stream(), candidates.stream())
                 .sorted(Comparator.reverseOrder())
+                .distinct()
                 .limit(population.size())
                 .toList();
     }

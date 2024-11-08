@@ -9,6 +9,7 @@ import uimp.muia.rpm.ea.individual.FixedPAssignedHub;
 
 import java.util.Arrays;
 import java.util.Random;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 /**
@@ -33,12 +34,17 @@ public class ReassignHubMutation implements Mutation<FixedPAssignedHub>, Stochas
             return individual;
         }
 
-        Byte[] chromosome = individual.chromosome();
-        int randomNode = rand.nextInt(individual.size());
-        int previousHub = chromosome[randomNode];
+        var currentHubs = individual.hubs();
+        var chromosome = individual.chromosome();
+        var randomNode = rand.ints(0, chromosome.length).boxed()
+                .map(x -> (byte)(int)x)
+                .filter(Predicate.not(currentHubs::contains))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Unlimited stream returned empty"));
+        var previousHub = chromosome[randomNode];
         IntStream.range(0, individual.size())
-                .filter(i -> chromosome[i] == previousHub)
-                .forEach(i -> chromosome[i] = (byte) randomNode);
+                .filter(i -> chromosome[i].equals(previousHub))
+                .forEach(i -> chromosome[i] = randomNode);
 
         LOG.atTrace().log("Mutated chromosome {}", Arrays.toString(chromosome));
         return new FixedPAssignedHub(individual.p(), chromosome);

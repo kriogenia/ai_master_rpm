@@ -1,13 +1,9 @@
 package uimp.muia.rpm.ea.phub;
 
-import uimp.muia.rpm.ea.Individual;
 import uimp.muia.rpm.ea.Problem;
 import uimp.muia.rpm.ea.individual.FixedPAssignedHub;
 
-import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 public class USApHMP implements Problem<FixedPAssignedHub> {
@@ -27,9 +23,18 @@ public class USApHMP implements Problem<FixedPAssignedHub> {
         var assignedHubs = individual.chromosome();
 
         var totalShippingsCost = 0.0;
+
         for (var i = 0; i < n; i++) {
             for (var j = 0; j < n; j++) {
-                totalShippingsCost += scenario.flowBetween(i, j) * costToShip(assignedHubs, i, j);
+                var k = assignedHubs[i];
+                var l = assignedHubs[j];
+
+                var wij = scenario.flowBetween(i, j);
+                var collectionCost = scenario.distanceBetween(i, k) * scenario.collectionCost();
+                var transferCost = scenario.distanceBetween(k, l) * scenario.transferCost();
+                var distributionCost = scenario.distanceBetween(j, l) * scenario.distributionCost();
+
+                totalShippingsCost += wij * (collectionCost + transferCost + distributionCost);
             }
         }
         return 0 - totalShippingsCost;
@@ -43,7 +48,7 @@ public class USApHMP implements Problem<FixedPAssignedHub> {
         var hubs = random.ints(0, n)
                 .boxed()
                 .distinct()
-                .limit(3)
+                .limit(p)
                 .toList();
 
         var chromosome = new Byte[n];

@@ -2,6 +2,9 @@ package uimp.muia.rpm.ea.individual;
 
 import uimp.muia.rpm.ea.Individual;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class TestIndividual implements Individual {
 
     private double fitness = 0.0;
@@ -33,6 +36,19 @@ public class TestIndividual implements Individual {
     @Override
     public Individual replica() {
         return new TestIndividual(chromosome);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TestIndividual that = (TestIndividual) o;
+        return Double.compare(fitness, that.fitness) == 0 || Objects.deepEquals(chromosome, that.chromosome);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fitness, Arrays.hashCode(chromosome));
     }
 
 }

@@ -4,6 +4,7 @@ import uimp.muia.rpm.ea.Individual;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Individual representation where each node points to its unique assigned hub and there's always `p` different hubs.
@@ -18,7 +19,7 @@ public class FixedPAssignedHub extends BaseIndividual {
         super();
         this.p = p;
         this.assignedHubs = assignedHubs;
-        assert assertP();
+        assert assertP() : "invalid chromosome p: %s, %s".formatted(p, Arrays.toString(assignedHubs));
     }
 
     @Override
@@ -48,4 +49,16 @@ public class FixedPAssignedHub extends BaseIndividual {
         return "%s -> %f".formatted(Arrays.toString(assignedHubs), this.fitness);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FixedPAssignedHub that = (FixedPAssignedHub) o;
+        return Objects.deepEquals(assignedHubs, that.assignedHubs);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(assignedHubs);
+    }
 }

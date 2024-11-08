@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 public final class SubProblem {
 
@@ -37,7 +38,9 @@ public final class SubProblem {
 
         var numNodes = Integer.parseInt(lines.getFirst());
         var nodes = lines.stream().skip(1).limit(numNodes).map(Coordinates::parse).toArray(Coordinates[]::new);
-        var flows = lines.stream().skip(1 + numNodes).limit(numNodes)
+        var flows = lines.stream()
+                .skip(1 + numNodes)
+                .limit(numNodes)
                 .map(SubProblem::parseDoubles)
                 .toArray(Double[][]::new);
         var hubs = Integer.parseInt(lines.get(1 + 2 * numNodes));
@@ -67,7 +70,7 @@ public final class SubProblem {
     }
 
     public double distanceBetween(int origin, int destination) {
-        return distances[origin][destination] * flows[origin][destination];
+        return distances[origin][destination];
     }
 
     public double flowBetween(int origin, int destination) {
