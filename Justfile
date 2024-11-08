@@ -3,8 +3,8 @@ resources := "src/main/resources"
 or-library := resources / "or-library"
 
 # Runs the project with whatever problem is set by default
-run:
-  @mvn -q compile exec:java -Dexec.mainClass="uimp.muia.rpm.Run"
+run ARGS:
+  @mvn -q compile exec:java -Dexec.mainClass="uimp.muia.rpm.Run" -Dexec.args="{{ARGS}}"
 
 # Builds the generate.c executable
 build_gen:

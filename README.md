@@ -19,18 +19,22 @@ library. To ease this just run the following recipe specifying the number of nod
 hubs. The generated subproblem will be placed in the resources folder where the project
 will be able to pick it.
 
-> [!NOTE]
-> The phub1 variant doesn't target
-
 ```sh
-just subproblem {N}
+just subproblem 10 3
 ```
 
 ## Running the algorithm
 
-To execute the algorithm a single time until the stop criterion
-is met you can just run the recipe:
+To execute the algorithm a single time until the stop criterion is met you can just run 
+the recipe with N and P.
 
 ```sh
-just run
+just run "10 3"
+```
+
+It is also possible to specify a seed, a maximum number of evaluations and the population
+size.
+
+```sh
+just run "10 3 --seed 123 --limit 10000 --population 15"
 ```
