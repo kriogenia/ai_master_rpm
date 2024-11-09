@@ -23,6 +23,7 @@ replay_pid*
 
 # Tex compile dir
 out/
+doc/*.pdf
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
