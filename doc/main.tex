@@ -1,5 +1,6 @@
 \documentclass[onecolumn]{IEEEtran}
 
+\usepackage{amsmath}
 \usepackage{authblk}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
@@ -17,6 +18,7 @@
 \newcommand{\ip}{\emph{p}}
 \newcommand{\wij}{\emph{W\textsubscript{ij}}}
 \def\code#1{\texttt{#1}}
+\def\point#1#2{\emph{#1\textsubscript{#2}}}
 
 \begin{document}
 
@@ -85,8 +87,83 @@ it into smaller problems given a certain N and P. The optimal solutions for ever
 \emph{N = {10, 20, 30, 40, 50}} and \emph{P = {2, 3, 4, 5}} were also provided. In this paper we'll
 be working with this dataset and these smaller problems.
 
-Following this introduction we'll... % todo add structure summary
+Following this introduction we'll... 
 
+% TODO add structure summary
+
+\section{Mathematical formulation}
+
+The problem \code{USApHMP-Q} is the quadratic linear algorithm of O'Kelly (1997)\cite{OKelly1987}
+reformulated by Ernst \& Krishnamoorthy (1996)\cite{Ernst1996} to accomodate the new costs
+introduced on their problem. Let Z be a matrix \emph{NxN} indicating which nodes of \emph{N} are
+allocated to which hubs. The total cost of a certain allocation \emph{Z} is the sum of the
+delivery cost every path \emph{i,j}, being the delivery cost of a path the product of the
+flow between the nodes and the sum of each step of the delivery.
+
+\break
+
+\textbf{Notation:}
+
+\wij: flow between the nodes \emph{i} and \emph{j}
+
+\point{d}{ij}: distance between the nodes \emph{i} and \emph{j} 
+
+$\chi$: collection cost
+
+$\alpha$: hub-to-hub transport cost
+
+$\delta$: distribution cost
+\[
+Z_{ij} = \begin{cases}
+  1 & \text{if } i \text{ is assigned to hub } j, \forall i = 1,\dots,n, \forall j = 1,\dots,n \\
+  0 & \text{otherwise, }\forall i = 1,\dots,n, \forall j = 1,\dots,n \\
+\end{cases}
+\]
+
+\subsection{Problem \code{USAp-HMP-Q}}
+
+\[
+  \text{Min. } \sum_{i\in N}\sum_{j\in N}\sum_{k\in N}\sum_{l\in N} W_{ij}(\chi d_{ik} Z_{ik} + \alpha d_{kl} Z_{ik} Z_{jl} + \delta d_{jl} Z_{jl})
+\]
+
+\begin{alignat}{3}
+  \text{S.t.} \quad & \sum_{k \in N} & \quad Z_{kk} &= p         & \label{p_hubs}\\
+                    & \sum_{k \in N} & \quad Z_{kk} &= 1         & \quad & \forall i \in N \label{single_alloc} \\
+                    &                & \quad Z_{ik} &\le Z_{kk}  & \quad & \forall i, k \in N \label{only_hubs} \\
+                    &                & \quad Z_{ik} &\in \{0,1\} & \quad & \forall i, k \in N \label{prev_realloc} \\
+\end{alignat}
+
+In this problem \eqref{p_hubs} sets the \ip-hub part of the problem
+ensuring that there's only \ip hubs. \eqref{single_alloc} ensures the single
+allocation as each column of \emph{Z} can only sum 1. \eqref{only_hubs} prevents
+allocations to non-hub nodes. And \eqref{prev_realloc} asserts that hub
+nodes are not allocated to other nodes.
+
+Aside from this formulation, Ernst \& Krishnamoorthy present two other versions in the
+same paper\cite{Ernst1996}. To see other formulations around the same or similar problems
+refer to the survey conducted by Farahani (2013)\cite{Farahani2013}.
+
+\subsection{Fitness function}
+
+% define the fitness that we'll be using
+%
+% |U(S)| = p <-- use this in the equation to indicated the number of hubs restriction
+
+\section{Genetic Algorithm}
+
+\subsection{Chromosome encoding}
+
+\subsection{Selection}
+
+\subsection{Crossover}
+
+\subsection{Mutation}
+
+\subsection{Replacement}
+
+\section{Computational results}
+
+\section{Conclusion}
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
