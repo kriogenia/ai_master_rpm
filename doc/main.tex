@@ -95,7 +95,7 @@ Following this introduction we'll...
 
 The problem \code{USApHMP-Q} is the quadratic linear algorithm of O'Kelly (1997)\cite{OKelly1987}
 reformulated by Ernst \& Krishnamoorthy (1996)\cite{Ernst1996} to accomodate the new costs
-introduced on their problem. Let Z be a matrix \emph{NxN} indicating which nodes of \emph{N} are
+introduced on their problem. Let Z be a matrix \emph{nxn} indicating which nodes of \emph{N} are
 allocated to which hubs. The total cost of a certain allocation \emph{Z} is the sum of the
 delivery cost every path \emph{i,j}, being the delivery cost of a path the product of the
 flow between the nodes and the sum of each step of the delivery.
@@ -123,14 +123,14 @@ Z_{ij} = \begin{cases}
 \subsection{Problem \code{USAp-HMP-Q}}
 
 \[
-  \text{Min. } \sum_{i\in N}\sum_{j\in N}\sum_{k\in N}\sum_{l\in N} W_{ij}(\chi d_{ik} Z_{ik} + \alpha d_{kl} Z_{ik} Z_{jl} + \delta d_{jl} Z_{jl})
+  \text{Min.} \quad \sum_{i\in N}\sum_{j\in N}\sum_{k\in N}\sum_{l\in N} W_{ij}(\chi d_{ik} Z_{ik} + \alpha d_{kl} Z_{ik} Z_{jl} + \delta d_{jl} Z_{jl})
 \]
 
 \begin{alignat}{3}
   \text{S.t.} \quad & \sum_{k \in N} & \quad Z_{kk} &= p         & \label{p_hubs}\\
                     & \sum_{k \in N} & \quad Z_{kk} &= 1         & \quad & \forall i \in N \label{single_alloc} \\
                     &                & \quad Z_{ik} &\le Z_{kk}  & \quad & \forall i, k \in N \label{only_hubs} \\
-                    &                & \quad Z_{ik} &\in \{0,1\} & \quad & \forall i, k \in N \label{prev_realloc} \\
+                    &                & \quad Z_{ik} &\in \{0,1\} & \quad & \forall i, k \in N \label{prev_realloc}
 \end{alignat}
 
 In this problem \eqref{p_hubs} sets the \ip-hub part of the problem
@@ -145,13 +145,33 @@ refer to the survey conducted by Farahani (2013)\cite{Farahani2013}.
 
 \subsection{Fitness function}
 
-% define the fitness that we'll be using
-%
-% |U(S)| = p <-- use this in the equation to indicated the number of hubs restriction
+The fitness function used in this project uses the \code{USAp-HMP-Q} function as its basis.
+In order to transform it into a maximization function it's negated. As we'll be using as a
+chromosome a valid and complete solution (see \ref{chromosome}) 
+where each node is already allocated to one of \emph{p} nodes the equation can be greatly
+simplified as there's no need for the two summatories over \emph{k} and \emph{l} to find the
+allocated nodes of \emph{i} and \emph{j}. Letting \point{S}{i} $\in$ \{1,\dots,n\} $\forall$ i be an
+array of size \emph{n} where \point{S}{i} is the assigned hub of \emph{i}, the fitness
+function to maximize is as follows:
+
+
+\[
+  \text{Max.} \quad 1 - \sum_{i \in n} \sum_{j \in n} W_{ij} (\chi d_{iS_{i}} + \alpha d_{S_{i}S_{j}} + \delta d_{jS_{j}})
+\]
+
+\begin{alignat}{3}
+  \text{S.t.} \quad & |U(S)|  &= p \label{ensure_p}
+\end{alignat}
+
+In this case aside from the possible values or the length or \emph{S} the only requirement
+the function must subject to is that the total of uniques values of \emph{S} is \emph{p}
+as it's enforced with Equation (\ref{ensure_p}).
+
+% todo think possible further restrictions?
 
 \section{Genetic Algorithm}
 
-\subsection{Chromosome encoding}
+\subsection{Chromosome encoding\label{chromosome}}
 
 \subsection{Selection}
 
