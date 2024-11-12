@@ -4,6 +4,7 @@
 \usepackage{amsmath}
 \usepackage{authblk}
 \usepackage[utf8]{inputenc}
+\usepackage{mathtools}
 \usepackage{nameref}
 \usepackage{graphicx}
 % \graphicspath{ {images/} }
@@ -89,6 +90,7 @@ This is done twice to select a total of two parents.  Both selected parents can 
 in that case the child generated will be a clone of the parent, but can still provide a better solution with
 the mutation.
 
+% todo candidate to removal
 \begin{algorithm}[H]
 \caption{Selection of one parent}
 \label{alg:select_parent}
@@ -108,6 +110,68 @@ the mutation.
 \end{algorithm}
 
 \subsection{Crossover\label{ss:crossover}}
+
+The crossover applied in the algorithm is based on the \emph{Single Point Crossover} strategy, but adding
+two possible modifications to ensure the validity of the solutions, as the merged chromosome can
+have between $1$ and $2p$ nodes, as it is shown in (\ref{eq:bad_chromosome}) with two parents and a
+cutting point that can generate two invalid chromosomes, the first one with a number of hubs below
+p and the second one with almost twice the value of $p$.
+
+\begin{equation}
+  \label{eq:bad_chromosome}
+  [1,1,1,1,2,3] x [5,1,5,4,1,1] \xRightarrow{x=4} [1,1,1,1,1,1], [5,1,5,4,2,3]
+\end{equation}
+
+This single point version generates a cutting point $x \in \{1,\dots,n\}$, creates a new child, and
+then replicates the hub of every node $i$ from the left parent while $i<=x$ and the right
+parent for every $x<i<=n$. If $x=n$ then the child will be an exact replica of the left parent.
+
+Then it evaluates the resulting child looking at its number of hubs. If it's exactly $p$ the child
+is deemed valid and returned. If it's below $p$, new hubs are generated until $p$ is satisfied, reallocating
+each of these nodes converted to hubs to themselves. If it's above $p$, random hubs are selected and
+removed until the child matches $p$, every orphaned node from this purge is rellocated to one of the
+remaining nodes. See the algorithm \ref{alg:crossover} for the full breakdown.
+
+\begin{algorithm}[H]
+  \caption{Crossover}
+  \label{alg:crossover}
+  \begin{algorithmic}[1]
+    \Require{$L$ (left parent)}
+    \Require{$R$ (right parent)}
+    \Require{$p$}
+    \Ensure{valid child}
+    \Function{RemoveHub}{$S,p$}
+      \While{$length(S.hubs)>p$}
+        \State $x \gets randomNode(S)$
+        \State $y \gets randomNode(S - nodeToRemove)$
+        \For{$n$ in $S$}
+          \If {$S_{n} = x$}
+            \State $S_{n} \gets y$
+          \EndIf
+        \EndFor
+      \EndWhile
+    \EndFunction
+    \item[]
+    \Function{AddHub}{$S,p$}
+      \While{$length(S.hubs)<p$}
+        \State $x \gets randomNode(S - S.hubs)$
+        \State $S_{x} \gets x$
+      \EndWhile
+    \EndFunction
+  \item[]
+  \State $x \gets randomPoint(N)$
+  \State $C \gets L.replica()$
+  \For{$i$ in ($x$, $length(child)$)}
+    \State $C_{i} \gets R_{i}$
+  \EndFor
+  \If{$length(C.hubs) > p$}
+    $RemoveHub(C,p)$
+  \ElsIf{$length(C.hubs) < p$}
+    $AddHub(C,p)$
+  \EndIf
+  \State \Return C
+  \end{algorithmic}
+\end{algorithm}
 
 \subsection{Mutation\label{ss:mutation}}
 
