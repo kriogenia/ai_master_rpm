@@ -14,7 +14,6 @@ public class BestSolutionStop implements Stop<FixedPAssignedHub> {
 
     public BestSolutionStop(int p, Byte[] allocations) {
         this.objective = new FixedPAssignedHub(p, Arrays.stream(allocations).map(x -> (byte)(x - 1)).toArray(Byte[]::new));
-        System.out.println(objective);
         this.found = false;
     }
 
