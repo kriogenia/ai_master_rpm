@@ -6,6 +6,10 @@ or-library := resources / "or-library"
 run ARGS:
   @mvn -q compile exec:java -Dexec.mainClass="uimp.muia.rpm.Run" -Dexec.args="{{ARGS}}"
 
+# Executes the benchmark
+benchmark:
+  @mvn -q compile exec:java -Dexec.mainClass="uimp.muia.rpm.Benchmark"
+
 # Builds the generate.c executable
 build_gen:
   @gcc {{or-library}}/generate.c -o {{generate}}
