@@ -10,8 +10,6 @@ import uimp.muia.rpm.ea.phub.USApHMP;
 import uimp.muia.rpm.ea.replacement.ElitistReplacement;
 import uimp.muia.rpm.ea.selection.BinaryTournament;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Optional;

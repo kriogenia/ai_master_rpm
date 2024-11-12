@@ -6,6 +6,7 @@ import uimp.muia.rpm.ea.crossover.SinglePointCrossover;
 import uimp.muia.rpm.ea.mutation.NoMutation;
 import uimp.muia.rpm.ea.replacement.ElitistReplacement;
 import uimp.muia.rpm.ea.selection.BinaryTournament;
+import uimp.muia.rpm.ea.stop.MaxEvaluationsStop;
 
 import java.util.List;
 import java.util.Random;
@@ -20,20 +21,21 @@ public class EvolutionaryAlgorithm<I extends Individual> {
     private final Problem<I> problem;
     private final Supplier<Random> newRandom;
     private final int populationSize;
-    private final int maxFunctionEvaluations;
 
+    private final Stop<I> stop;
     private final Selection<I> selection;
     private final Crossover<I> crossover;
     private final Mutation<I> mutation;
     private final Replacement<I> replacement;
 
     private long functionEvaluations = 0;
+    private I best = null;
 
     private EvolutionaryAlgorithm(
             Problem<I> problem,
             Supplier<Random> newRandom,
             int populationSize,
-            int maxFunctionEvaluations,
+            Stop<I> stop,
             Selection<I> selection,
             Crossover<I> crossover,
             Mutation<I> mutation,
@@ -42,7 +44,7 @@ public class EvolutionaryAlgorithm<I extends Individual> {
         this.problem = problem;
         this.newRandom = newRandom;
         this.populationSize = populationSize;
-        this.maxFunctionEvaluations = maxFunctionEvaluations;
+        this.stop = stop;
         this.selection = selection;
         this.crossover = crossover;
         this.mutation = mutation;
@@ -55,18 +57,27 @@ public class EvolutionaryAlgorithm<I extends Individual> {
 
         LOG.atInfo().log("Generating initial population");
         var population = generateInitialPopulation();
-        var best = population.stream().reduce(population.getFirst(), this::evaluateIndividual);
+        best = population.stream().reduce(population.getFirst(), this::evaluateIndividual);
         LOG.atInfo().log("Selected first best solution: {}", best);
 
-        while (functionEvaluations < maxFunctionEvaluations) {
+        while (!stop.stop()) {
             I leftParent = selection.selectParent(population);
             I rightParent = selection.selectParent(population);
             I child = crossover.apply(leftParent, rightParent);
             child = mutation.apply(child);
             best = evaluateIndividual(best, child);
             population = replacement.replace(population, List.of(child));
+            stop.update(this);
         }
 
+        return best;
+    }
+
+    public long getEvaluations() {
+        return functionEvaluations;
+    }
+
+    public I getBest() {
         return best;
     }
 
@@ -107,8 +118,8 @@ public class EvolutionaryAlgorithm<I extends Individual> {
 
         private Supplier<Random> newRandom;
         private int populationSize;
-        private int maxEvaluations;
 
+        private Stop<I> stop;
         private Selection<I> selection;
         private Crossover<I> crossover;
         private Mutation<I> mutation;
@@ -118,7 +129,7 @@ public class EvolutionaryAlgorithm<I extends Individual> {
             this.problem = problem;
             this.newRandom = Random::new;
             this.populationSize = 10;
-            this.maxEvaluations = 1_000;
+            this.stop = new MaxEvaluationsStop<>(1_000L);
             this.selection = new BinaryTournament<>();
             this.crossover = new SinglePointCrossover<>();
             this.mutation = new NoMutation<>();
@@ -130,13 +141,13 @@ public class EvolutionaryAlgorithm<I extends Individual> {
             return this;
         }
 
-        public Builder<I> withMaxEvaluations(int maxEvaluations) {
-            this.maxEvaluations = maxEvaluations;
+        public Builder<I> withSeed(long seed) {
+            this.newRandom = () -> new Random(seed);
             return this;
         }
 
-        public Builder<I> withSeed(long seed) {
-            this.newRandom = () -> new Random(seed);
+        public Builder<I> withMaxEvaluations(int maxEvaluations) {
+            this.stop = new MaxEvaluationsStop<>(maxEvaluations);
             return this;
         }
 
@@ -165,7 +176,7 @@ public class EvolutionaryAlgorithm<I extends Individual> {
                     this.problem,
                     this.newRandom,
                     this.populationSize,
-                    this.maxEvaluations,
+                    this.stop,
                     this.selection,
                     this.crossover,
                     this.mutation,
