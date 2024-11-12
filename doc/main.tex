@@ -1,5 +1,6 @@
 \documentclass[onecolumn]{IEEEtran}
 
+\usepackage{algorithm,algpseudocode}
 \usepackage{amsmath}
 \usepackage{authblk}
 \usepackage[utf8]{inputenc}
@@ -40,10 +41,13 @@ Hub location, genetic algorithms, heuristic solution, metaheuristics, analysis
 \section{Genetic Algorithm}
 
 Our implementation follows the basic schema of every GA\cite{Thede2004}. Creation and evaluation of an initial
-population, and improvement of that population until a termination condition is met. The population refinement 
-is done via a \emph{selection} of two or more parents, generation of new childs from the \emph{crossover} of
-these parents, application of a \emph{mutation} to diversify the population and a evaluation of the childs
-to select and \emph{refine} the new population that will be used in the next iteration of the loop.
+population (\emph{P}), and improvement of that population until a termination condition is met. The population
+refinement  is done via a \emph{selection} of two or more parents, generation of new childs from the
+\emph{crossover} of these parents, application of a \emph{mutation} to diversify the population and a
+evaluation of the childs to select and \emph{refine} the new population that will be used in the next
+iteration of the loop.
+
+% todo name the vars like population_size? <-- assign a greek letter and modify the population defininition
 
 In order to improve the performance of the algorithm some domain-specific components were implemented,
 mainly in the \nameref{ss:crossover} (\ref{ss:crossover}) 
@@ -75,6 +79,33 @@ one assigned hub, these first random chromosome will always allocated each hub t
 \end{equation}
 
 \subsection{Selection}
+
+In the selection step the strategy used is the \emph{Binary Tournament}. We pick two random individuals from
+the population and select the one with the higher fitness (alg. \ref{alg:select_parent}).
+In case of equal fitness the first candidate gets the priority. Both random individuals can be the same,
+in that case, that individual is ensured to be picked for the crossover step.
+
+This is done twice to select a total of two parents.  Both selected parents can also be the same individual,
+in that case the child generated will be a clone of the parent, but can still provide a better solution with
+the mutation.
+
+\begin{algorithm}[H]
+\caption{Selection of one parent}
+\label{alg:select_parent}
+\begin{algorithmic}[1]
+  \Require{$P = S_{1},\dots,S_{n}$}
+  \Ensure{$parent \in P$}
+  \Function{SelectParent}{$S[\;]$}
+    \State $firstCandidate \gets randomNode(N)$
+    \State $secondCandidate \gets randomNode(N)$
+    \If {$firstCandidate \ge secondCandidate$}
+      \State \Return {$firstCandidate$}
+    \Else
+      \State \Return {$secondCandidate$}
+    \EndIf
+  \EndFunction
+\end{algorithmic}
+\end{algorithm}
 
 \subsection{Crossover\label{ss:crossover}}
 
