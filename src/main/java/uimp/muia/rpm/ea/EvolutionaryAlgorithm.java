@@ -6,6 +6,7 @@ import uimp.muia.rpm.ea.crossover.SinglePointCrossover;
 import uimp.muia.rpm.ea.mutation.NoMutation;
 import uimp.muia.rpm.ea.replacement.ElitistReplacement;
 import uimp.muia.rpm.ea.selection.BinaryTournament;
+import uimp.muia.rpm.ea.stop.BestSolutionStop;
 import uimp.muia.rpm.ea.stop.MaxEvaluationsStop;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class EvolutionaryAlgorithm<I extends Individual> {
     private final Supplier<Random> newRandom;
     private final int populationSize;
 
-    private final Stop<I> stop;
+    private final Stop stop;
     private final Selection<I> selection;
     private final Crossover<I> crossover;
     private final Mutation<I> mutation;
@@ -35,7 +36,7 @@ public class EvolutionaryAlgorithm<I extends Individual> {
             Problem<I> problem,
             Supplier<Random> newRandom,
             int populationSize,
-            Stop<I> stop,
+            Stop stop,
             Selection<I> selection,
             Crossover<I> crossover,
             Mutation<I> mutation,
@@ -119,7 +120,7 @@ public class EvolutionaryAlgorithm<I extends Individual> {
         private Supplier<Random> newRandom;
         private int populationSize;
 
-        private Stop<I> stop;
+        private Stop stop;
         private Selection<I> selection;
         private Crossover<I> crossover;
         private Mutation<I> mutation;
@@ -129,7 +130,7 @@ public class EvolutionaryAlgorithm<I extends Individual> {
             this.problem = problem;
             this.newRandom = Random::new;
             this.populationSize = 10;
-            this.stop = new MaxEvaluationsStop<>(1_000L);
+            this.stop = new MaxEvaluationsStop(1_000L);
             this.selection = new BinaryTournament<>();
             this.crossover = new SinglePointCrossover<>();
             this.mutation = new NoMutation<>();
@@ -147,7 +148,12 @@ public class EvolutionaryAlgorithm<I extends Individual> {
         }
 
         public Builder<I> withMaxEvaluations(int maxEvaluations) {
-            this.stop = new MaxEvaluationsStop<>(maxEvaluations);
+            this.stop = new MaxEvaluationsStop<I>(maxEvaluations);
+            return this;
+        }
+
+        public Builder<I> withStop(Stop<I> stop) {
+            this.stop = stop;
             return this;
         }
 
