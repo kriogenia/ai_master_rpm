@@ -16,23 +16,41 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
 public class Benchmark {
 
-    public static final int N_SOLUTIONS = 20;
-    public static final int POPULATION_SIZE = 10;
+    private static final int BASE_SEED = 19;
+    private static final int EXECUTIONS = 30;
+    private static final int N_SOLUTIONS = 20;
+    private static final int MAX_EVALUATIONS = 100_000;
+    private static final int POPULATION_SIZE = 10;
+
+    private static final List<Double> MUTATIONS = List.of(0.05, 0.1, 0.25, 0.5);
 
     public static void main(String[] args) throws Exception {
         var solutions = loadSolutions();
+        System.out.println("| n | p | mutation | population | objective | gap | evaluations | time |");
+        System.out.println("|---|---|----------|------------|-----------|-----|-------------|------|");
         for (var solution : solutions) {
-            System.out.printf("Looking for %d,%d. Start at %s%n", solution.n, solution.p, Instant.now());
-            run(solution);
+            for (var mutation : MUTATIONS) {
+                var measurements = new ArrayList<Measurement>();
+                for (int i = 0; i < EXECUTIONS; i++) {
+                    var result = run(solution, BASE_SEED + i, mutation);
+                    measurements.add(result);
+                }
+                var results = calculateAverages(solution, measurements);
+
+                System.out.printf("| %d | %d | %.2f | - | %f | %.2f | %d | %.3f ms |%n" ,
+                        solution.n, solution.p, mutation, solution.objective,
+                        results.gapPercent, results.evaluations, results.time);
+            }
         }
     }
 
-    private static void run(Solution solution) throws URISyntaxException, IOException {
+    private static Measurement run(Solution solution, long seed, double mutation) throws Exception {
         var file = "subproblems/phub_%d.%d.txt".formatted(solution.n, solution.p);
         var subproblem = Benchmark.class.getClassLoader().getResource(file);
         assert subproblem != null;
@@ -40,21 +58,24 @@ public class Benchmark {
         var phub = SubProblem.fromFile(Path.of(subproblem.toURI()));
         var problem = new USApHMP(phub);
         var ea = new EvolutionaryAlgorithm.Builder<>(problem)
-                .withSeed(123L) // TODO pass seed
+                .withSeed(seed)
                 .withPopulationSize(POPULATION_SIZE)
                 .withStop(new OrStop<FixedPAssignedHub>()
                         .add(new BestSolutionStop(solution.p, solution.allocation))
-                        .add(new MaxEvaluationsStop<>(10_000L)))
+                        .add(new MaxEvaluationsStop<>(MAX_EVALUATIONS)))
 //                .withMaxEvaluations(args.limit())
                 .withSelector(new BinaryTournament<>())
                 .withCrossover(new FixedPSinglePointCrossover())
-                .withMutation(new ReassignHubMutation(1.0 / phub.n())) // TODO var mutation
+                .withMutation(new ReassignHubMutation(mutation)) // TODO var mutation
                 .withReplacement(new ElitistReplacement<>())
                 .build();
-        var best = ea.run();
-        System.out.printf("Gap: [%f%%]%n", 100 - 100 * solution.objective/(-best.fitness()));
-    }
 
+        var start = Instant.now();
+        var best = ea.run();
+        var elapsed = Duration.between(start, Instant.now()).toNanos() / 1_000_000.0;
+
+        return new Measurement(best.fitness(), ea.getEvaluations(), elapsed);
+    }
 
     private static Set<Solution> loadSolutions() throws URISyntaxException, IOException {
         var phub3 = Benchmark.class.getClassLoader().getResource("or-library/phub3.txt");
@@ -76,6 +97,15 @@ public class Benchmark {
         return solutions;
     }
 
+    private static Averages calculateAverages(Solution solution, List<Measurement> measurements) {
+        var avgFitness = - measurements.stream().map(Measurement::fitness).reduce(0.0, Double::sum) / EXECUTIONS;
+        var avgTime = measurements.stream().map(Measurement::time).reduce(0.0, Double::sum) / EXECUTIONS;
+        var avgEvals = measurements.stream().map(Measurement::evaluations).reduce(0L, Long::sum) / EXECUTIONS;
+        var gapPercent = (1 - solution.objective / avgFitness) * 100;
+
+        return new Averages(gapPercent, avgEvals, avgTime);
+    }
+
     record Solution(
             int n,
             int p,
@@ -88,5 +118,8 @@ public class Benchmark {
         }
     }
 
+    record Measurement(double fitness, long evaluations, double time) {}
+
+    record Averages(double gapPercent, long evaluations, double time) {}
 
 }
