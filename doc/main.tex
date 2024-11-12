@@ -3,6 +3,7 @@
 \usepackage{amsmath}
 \usepackage{authblk}
 \usepackage[utf8]{inputenc}
+\usepackage{nameref}
 \usepackage{graphicx}
 % \graphicspath{ {images/} }
 
@@ -38,13 +39,46 @@ Hub location, genetic algorithms, heuristic solution, metaheuristics, analysis
 
 \section{Genetic Algorithm}
 
-\subsection{Chromosome encoding\label{chromosome}}
+Our implementation follows the basic schema of every GA\cite{Thede2004}. Creation and evaluation of an initial
+population, and improvement of that population until a termination condition is met. The population refinement 
+is done via a \emph{selection} of two or more parents, generation of new childs from the \emph{crossover} of
+these parents, application of a \emph{mutation} to diversify the population and a evaluation of the childs
+to select and \emph{refine} the new population that will be used in the next iteration of the loop.
+
+In order to improve the performance of the algorithm some domain-specific components were implemented,
+mainly in the \nameref{ss:crossover} (\ref{ss:crossover}) 
+and \nameref{ss:mutation} (\ref{ss:mutation}) steps. This 
+section will offer a brief description of the implementation of every facet of the GA.
+
+\subsection{Chromosome encoding\label{ss:chromosome}}
+
+The chromosome encoding that we used in our individuals is an array \emph{S} of size \emph{n} where each
+index would point to the randomly assigned hub of each node. On top of that, these individuals are built
+with the necessary contracts to ensure that they always contain \emph{p} unique values stored in the chromosome,
+that way we are ensuring that every chromosome is a valid solution with \emph{p} hubs.
+
+\begin{equation}
+  S = [1, 1, 5, 1, 5, 5, 9, 1, 5, 9 ],\quad p = 3 \label{eq:chromosome_example}
+\end{equation}
+
+An example of this chromosome to a problem of size \emph{n = 10} and \emph{p = 3} is the one shown
+at (\ref{eq:chromosome_example}). In this example the node 1 is assigned to itself as indicated
+by $S_{1}=1$, the node 2 is allocated also to node 1, the node 3 to another hub placed in 5 and so on.
+See also that $U(S)=\{1,5,9\}$ fulfilling the $|U(S)|=3$ requirement to have $p=3$ hubs.
+
+The generation of the initial population of individuals is random, selecting three different values from
+${1,\dots,n}$ and randomly assigning them to the different hubs. To ensure that all three have at least
+one assigned hub, these first random chromosome will always allocated each hub to itself (\ref{eq:autoalloc}).
+
+\begin{equation}
+  S_{i}=i, \forall i \in U(S) \label{eq:autoalloc}
+\end{equation}
 
 \subsection{Selection}
 
-\subsection{Crossover}
+\subsection{Crossover\label{ss:crossover}}
 
-\subsection{Mutation}
+\subsection{Mutation\label{ss:mutation}}
 
 \subsection{Replacement}
 

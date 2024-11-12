@@ -13,7 +13,7 @@ flow between the nodes and the sum of each step of the delivery.
 
 \wij: flow between the nodes \emph{i} and \emph{j}
 
-\point{d}{ij}: distance between the nodes \emph{i} and \emph{j} 
+\point{d}{ij}: euclidean distance between the nodes \emph{i} and \emph{j} 
 
 $\chi$: collection cost
 
@@ -35,15 +35,15 @@ Z_{ij} = \begin{cases}
 
 \begin{alignat}{3}
   \text{S.t.} \quad & \sum_{k \in N} & \quad Z_{kk} &= p         & \label{p_hubs}\\
-                    & \sum_{k \in N} & \quad Z_{kk} &= 1         & \quad & \forall i \in N \label{single_alloc} \\
-                    &                & \quad Z_{ik} &\le Z_{kk}  & \quad & \forall i, k \in N \label{only_hubs} \\
-                    &                & \quad Z_{ik} &\in \{0,1\} & \quad & \forall i, k \in N \label{prev_realloc}
+                    & \sum_{k \in N} & \quad Z_{kk} &= 1         & \quad & \forall i \in N \label{eq:single_alloc} \\
+                    &                & \quad Z_{ik} &\le Z_{kk}  & \quad & \forall i, k \in N \label{eq:only_hubs} \\
+                    &                & \quad Z_{ik} &\in \{0,1\} & \quad & \forall i, k \in N \label{eq:prev_alloc}
 \end{alignat}
 
 In this problem \eqref{p_hubs} sets the \ip-hub part of the problem
-ensuring that there's only \ip hubs. \eqref{single_alloc} ensures the single
-allocation as each column of \emph{Z} can only sum 1. \eqref{only_hubs} prevents
-allocations to non-hub nodes. And \eqref{prev_realloc} asserts that hub
+ensuring that there's only \ip hubs. \eqref{eq:single_alloc} ensures the single
+allocation as each column of \emph{Z} can only sum 1. \eqref{eq:only_hubs} prevents
+allocations to non-hub nodes. And \eqref{eq:prev_alloc} asserts that hub
 nodes are not allocated to other nodes.
 
 Aside from this formulation, Ernst \& Krishnamoorthy present two other versions in the
@@ -54,7 +54,7 @@ refer to the survey conducted by Farahani (2013)\cite{Farahani2013}.
 
 The fitness function used in this project uses the \code{USAp-HMP-Q} function as its basis.
 In order to transform it into a maximization function it's negated. As we'll be using as a
-chromosome a valid and complete solution (see \ref{chromosome}) 
+chromosome a valid and complete solution (see \ref{ss:chromosome}) 
 where each node is already allocated to one of \emph{p} nodes the equation can be greatly
 simplified as there's no need for the two summatories over \emph{k} and \emph{l} to find the
 allocated nodes of \emph{i} and \emph{j}. Letting \point{S}{i} $\in$ \{1,\dots,n\} $\forall$ i be an
@@ -67,12 +67,14 @@ function to maximize is as follows:
 \]
 
 \begin{alignat}{3}
-  \text{S.t.} \quad & |U(S)|  &= p \label{ensure_p}
+  \text{S.t.} \quad & |S| = n \\
+                    & S_{i} \in \{1,\dots,n\}, \forall i \in \{1,\dots,n\} \\
+   & |U(S)| = p \label{eq:ensure_p}
 \end{alignat}
 
 In this case aside from the possible values or the length or \emph{S} the only requirement
 the function must subject to is that the total of uniques values of \emph{S} is \emph{p}
-as it's enforced with Equation (\ref{ensure_p}).
+as it's enforced with Equation (\ref{eq:ensure_p}).
 
 % todo think possible further restrictions?
 
