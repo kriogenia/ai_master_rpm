@@ -2,6 +2,7 @@ package uimp.muia.rpm;
 
 import uimp.muia.rpm.ea.EvolutionaryAlgorithm;
 import uimp.muia.rpm.ea.Individual;
+import uimp.muia.rpm.ea.Stop;
 import uimp.muia.rpm.ea.crossover.FixedPSinglePointCrossover;
 import uimp.muia.rpm.ea.individual.FixedPAssignedHub;
 import uimp.muia.rpm.ea.mutation.ReassignHubMutation;
@@ -26,7 +27,6 @@ public class Benchmark {
     private static final int BASE_SEED = 19;
     private static final int EXECUTIONS = 30;
     private static final int N_SOLUTIONS = 20;
-    private static final int MAX_EVALUATIONS = 100_000;
 
     private static final List<Double> MUTATIONS = List.of(0.05, 0.1, 0.25, 0.5);
 
@@ -40,7 +40,7 @@ public class Benchmark {
             for (var mutation : MUTATIONS) {
                 var measurements = new ArrayList<Result>();
                 for (int i = 0; i < EXECUTIONS; i++) {
-                    var result = run(solution, BASE_SEED + i, mutation);
+                    var result = run(mode, solution, BASE_SEED + i, mutation);
                     measurements.add(result);
                 }
                 mode.printResults(solution, mutation, measurements);
@@ -48,19 +48,25 @@ public class Benchmark {
         }
     }
 
-    private static Result run(Solution solution, long seed, double mutation) throws Exception {
+    private static Result run(Mode mode, Solution solution, long seed, double mutation) throws Exception {
         var file = "subproblems/phub_%d.%d.txt".formatted(solution.n, solution.p);
         var subproblem = Benchmark.class.getClassLoader().getResource(file);
         assert subproblem != null;
 
         var phub = SubProblem.fromFile(Path.of(subproblem.toURI()));
         var problem = new USApHMP(phub);
+
+        Stop<FixedPAssignedHub> stop = new MaxEvaluationsStop<>(mode.evaluations());
+        if (mode == Mode.OPTIMAL) {
+            stop = new OrStop<FixedPAssignedHub>()
+                    .add(new BestSolutionStop(solution.p, solution.allocation))
+                    .add(stop);
+        }
+
         var ea = new EvolutionaryAlgorithm.Builder<>(problem)
                 .withSeed(seed)
                 .withPopulationSize(solution.n + 1)
-                .withStop(new OrStop<FixedPAssignedHub>()
-                        .add(new BestSolutionStop(solution.p, solution.allocation))
-                        .add(new MaxEvaluationsStop<>(MAX_EVALUATIONS)))
+                .withStop(stop)
                 .withSelector(new BinaryTournament<>())
                 .withCrossover(new FixedPSinglePointCrossover())
                 .withMutation(new ReassignHubMutation(mutation))
@@ -118,33 +124,51 @@ public class Benchmark {
         OPTIMAL,
         EVALUATIONS;
 
+        private static final int OPTIMAL_LIMIT = 1_000_000;
+        private static final int MAX_EVALUATIONS = 100_000;
+
+        private static final String OPTIMAL_TAIL = "%.0f,%.6f,%.3f,%d,%d";
+        private static final String EVALUATIONS_TAIL = "%.0f,%.6f,%.3f,%d";
+
         void printHeader() {
             var header = switch (this) {
                 case OPTIMAL -> "n,p,mutation,objective,best,gap,hit_rate,evaluations,time";
-                case EVALUATIONS -> "not yet implemented";
+                case EVALUATIONS -> "n,p,mutation,objective,avg,gap,hit_rate,time";
             };
             System.out.println(header);
         }
 
-        private static final String TAIL_TMP = "%.0f,%.6f,%.3f,%d,%d";
+        int evaluations() {
+            return switch (this) {
+                case OPTIMAL -> OPTIMAL_LIMIT;
+                case EVALUATIONS -> MAX_EVALUATIONS;
+            };
+        }
 
         void printResults(Solution solution, double mutation, List<Result> results) {
             var solutions = results.stream().map(Result::best).toList();
             var hits = results.stream().filter(s -> Arrays.equals(solution.allocation, s.best.chromosome())).toList();
 
-            var tail = switch (hits.size()) {
-                case 0 -> {
+            var tail = switch (this) {
+                case OPTIMAL -> {
                     var best = -solutions.stream().max(Individual::compareTo).orElseThrow().fitness();
-                    var gap = Math.abs(1 - solution.objective / best);
-                    var time = results.stream().map(Result::time).reduce(0L, Long::sum) / results.size();
-                    yield TAIL_TMP.formatted(best, gap, 0.0, MAX_EVALUATIONS, time);
+                    if (hits.isEmpty()) {
+                        var gap = Math.abs(1 - solution.objective / best);
+                        var time = results.stream().map(Result::time).reduce(0L, Long::sum) / results.size();
+                        yield OPTIMAL_TAIL.formatted(best, gap, 0.0, OPTIMAL.evaluations(), time);
+                    } else {
+                        var hitRate = ((double) hits.size()) / results.size();
+                        var evaluations = hits.stream().map(Result::evaluations).reduce(0L, Long::sum) / hits.size();
+                        var time = hits.stream().map(Result::time).reduce(0L, Long::sum) / hits.size();
+                        yield OPTIMAL_TAIL.formatted(best, 0.0, hitRate, evaluations, time);
+                    }
                 }
-                default -> {
-                    var best = -hits.getFirst().best.fitness();
+                case EVALUATIONS -> {
+                    var avg = -solutions.stream().map(Individual::fitness).reduce(0.0, Double::sum) / solutions.size();
+                    var gap = Math.abs(1 - solution.objective / avg);
                     var hitRate = ((double) hits.size()) / results.size();
-                    var evaluations = hits.stream().map(Result::evaluations).reduce(0L, Long::sum) / hits.size();
-                    var time = hits.stream().map(Result::time).reduce(0L, Long::sum) / hits.size();
-                    yield TAIL_TMP.formatted(best, 0.0, hitRate, evaluations, time);
+                    var time = results.stream().map(Result::time).reduce(0L, Long::sum) / results.size();
+                    yield EVALUATIONS_TAIL.formatted(avg, gap, hitRate, time);
                 }
             };
 

@@ -2,6 +2,7 @@
 
 \usepackage{algorithm,algpseudocode}
 \usepackage{amsmath}
+\usepackage{array}
 \usepackage{authblk}
 \usepackage[utf8]{inputenc}
 \usepackage{mathtools}
@@ -82,32 +83,13 @@ one assigned hub, these first random chromosome will always allocated each hub t
 \subsection{Selection}
 
 In the selection step the strategy used is the \emph{Binary Tournament}. We pick two random individuals from
-the population and select the one with the higher fitness (alg. \ref{alg:select_parent}).
-In case of equal fitness the first candidate gets the priority. Both random individuals can be the same,
-in that case, that individual is ensured to be picked for the crossover step.
+the population and select the one with the higher fitness. In case of equal fitness the first candidate
+gets the priority. Both random individuals can be the same, in that case, that individual is ensured to
+be picked for the crossover step.
 
 This is done twice to select a total of two parents.  Both selected parents can also be the same individual,
 in that case the child generated will be a clone of the parent, but can still provide a better solution with
 the mutation.
-
-% todo candidate to removal
-\begin{algorithm}[H]
-\caption{Selection of one parent}
-\label{alg:select_parent}
-\begin{algorithmic}[1]
-  \Require{$P = S_{1},\dots,S_{n}$}
-  \Ensure{$parent \in P$}
-  \Function{SelectParent}{$S[\;]$}
-    \State $firstCandidate \gets randomNode(N)$
-    \State $secondCandidate \gets randomNode(N)$
-    \If {$firstCandidate \ge secondCandidate$}
-      \State \Return {$firstCandidate$}
-    \Else
-      \State \Return {$secondCandidate$}
-    \EndIf
-  \EndFunction
-\end{algorithmic}
-\end{algorithm}
 
 \subsection{Crossover\label{ss:crossover}}
 
@@ -144,7 +126,7 @@ remaining nodes. See the algorithm \ref{alg:crossover} for the full breakdown.
       \While{$length(S.hubs)>p$}
         \State $x \gets randomNode(S)$
         \State $y \gets randomNode(S - nodeToRemove)$
-        \For{$n$ in $S$}
+        \For{$n$ in $0, length(S)$}
           \If {$S_{n} = x$}
             \State $S_{n} \gets y$
           \EndIf
@@ -175,9 +157,43 @@ remaining nodes. See the algorithm \ref{alg:crossover} for the full breakdown.
 
 \subsection{Mutation\label{ss:mutation}}
 
+The mutation applied to the chromosome is the a hub reassignment. A random non-hub node is
+picked and transformed into a hub. Every sibling node assigned to the same hub is reallocated
+to this new hub, including the previous hub (see Alg. \ref{alg:mutation}).
+The probability to perform this mutation can be specified before running the algorithm,
+and different values ($\{0.05., 0.1, 0.25, 0.5\}$) were tested in the following section 
+(\ref{s:computational_results})
+to find which probability performed the best.
+
+\begin{algorithm}[H]
+  \caption{Mutation}
+  \label{alg:mutation}
+  \begin{algorithmic}[1]
+    \Require{$S$ (chromosome)}
+    \State $h \gets randomNode(S - S.hubs)$
+    \For{$n$ in $0, length(S)$}
+    \If {$S_{n} = S_{h}$}
+        \State $S_{n} \gets h$
+      \EndIf
+    \EndFor
+  \end{algorithmic}
+\end{algorithm}
+
 \subsection{Replacement}
 
-\section{Computational results}
+\section{Computational results\label{s:computational_results}}
+
+\subsection{Analysis of performance searching the optimal solution}
+
+Refer to Table \ref{tb:optimal_benchmark}.
+
+\input{tables/benchmark_optimal.tex}
+
+\subsection{Analysis of performance in a fixed number of evaluations}
+
+Refer to Table \ref{tb:evals_benchmark}
+
+\input{tables/benchmark_evaluations.tex}
 
 \section{Conclusion}
 
