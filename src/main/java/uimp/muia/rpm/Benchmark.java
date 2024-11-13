@@ -1,6 +1,7 @@
 package uimp.muia.rpm;
 
 import uimp.muia.rpm.ea.EvolutionaryAlgorithm;
+import uimp.muia.rpm.ea.Individual;
 import uimp.muia.rpm.ea.crossover.FixedPSinglePointCrossover;
 import uimp.muia.rpm.ea.individual.FixedPAssignedHub;
 import uimp.muia.rpm.ea.mutation.ReassignHubMutation;
@@ -26,31 +27,28 @@ public class Benchmark {
     private static final int EXECUTIONS = 30;
     private static final int N_SOLUTIONS = 20;
     private static final int MAX_EVALUATIONS = 100_000;
-    private static final int POPULATION_SIZE = 10;
 
     private static final List<Double> MUTATIONS = List.of(0.05, 0.1, 0.25, 0.5);
 
     public static void main(String[] args) throws Exception {
         var solutions = loadSolutions();
-        System.out.println("| n | p | mutation | population | objective | gap | evaluations | time |");
-        System.out.println("|---|---|----------|------------|-----------|-----|-------------|------|");
+
+        var mode = args.length > 0 && args[0].equals("optimal") ? Mode.OPTIMAL : Mode.EVALUATIONS;
+        mode.printHeader();
+
         for (var solution : solutions) {
             for (var mutation : MUTATIONS) {
-                var measurements = new ArrayList<Measurement>();
+                var measurements = new ArrayList<Result>();
                 for (int i = 0; i < EXECUTIONS; i++) {
                     var result = run(solution, BASE_SEED + i, mutation);
                     measurements.add(result);
                 }
-                var results = calculateAverages(solution, measurements);
-
-                System.out.printf("| %d | %d | %.2f | - | %f | %.2f | %d | %.3f ms |%n" ,
-                        solution.n, solution.p, mutation, solution.objective,
-                        results.gapPercent, results.evaluations, results.time);
+                mode.printResults(solution, mutation, measurements);
             }
         }
     }
 
-    private static Measurement run(Solution solution, long seed, double mutation) throws Exception {
+    private static Result run(Solution solution, long seed, double mutation) throws Exception {
         var file = "subproblems/phub_%d.%d.txt".formatted(solution.n, solution.p);
         var subproblem = Benchmark.class.getClassLoader().getResource(file);
         assert subproblem != null;
@@ -59,22 +57,21 @@ public class Benchmark {
         var problem = new USApHMP(phub);
         var ea = new EvolutionaryAlgorithm.Builder<>(problem)
                 .withSeed(seed)
-                .withPopulationSize(POPULATION_SIZE)
+                .withPopulationSize(solution.n + 1)
                 .withStop(new OrStop<FixedPAssignedHub>()
                         .add(new BestSolutionStop(solution.p, solution.allocation))
                         .add(new MaxEvaluationsStop<>(MAX_EVALUATIONS)))
-//                .withMaxEvaluations(args.limit())
                 .withSelector(new BinaryTournament<>())
                 .withCrossover(new FixedPSinglePointCrossover())
-                .withMutation(new ReassignHubMutation(mutation)) // TODO var mutation
+                .withMutation(new ReassignHubMutation(mutation))
                 .withReplacement(new ElitistReplacement<>())
                 .build();
 
         var start = Instant.now();
         var best = ea.run();
-        var elapsed = Duration.between(start, Instant.now()).toNanos() / 1_000_000.0;
+        var elapsed = Duration.between(start, Instant.now()).toNanos();
 
-        return new Measurement(best.fitness(), ea.getEvaluations(), elapsed);
+        return new Result(best, ea.getEvaluations(), elapsed);
     }
 
     private static Set<Solution> loadSolutions() throws URISyntaxException, IOException {
@@ -97,29 +94,64 @@ public class Benchmark {
         return solutions;
     }
 
-    private static Averages calculateAverages(Solution solution, List<Measurement> measurements) {
-        var avgFitness = - measurements.stream().map(Measurement::fitness).reduce(0.0, Double::sum) / EXECUTIONS;
-        var avgTime = measurements.stream().map(Measurement::time).reduce(0.0, Double::sum) / EXECUTIONS;
-        var avgEvals = measurements.stream().map(Measurement::evaluations).reduce(0L, Long::sum) / EXECUTIONS;
-        var gapPercent = (1 - solution.objective / avgFitness) * 100;
-
-        return new Averages(gapPercent, avgEvals, avgTime);
-    }
-
     record Solution(
             int n,
             int p,
             double objective,
             Byte[] allocation
     ) implements Comparable<Solution> {
+
+        Solution {
+            // the provided solutions are based on index starting at 1
+            allocation = Arrays.stream(allocation).map(x -> (byte)(x - 1)).toArray(Byte[]::new);
+        }
+
         @Override
         public int compareTo(Solution o) {
             return (this.n + this.p) - (o.n + o.p);
         }
     }
 
-    record Measurement(double fitness, long evaluations, double time) {}
+    record Result(FixedPAssignedHub best, long evaluations, long time) {}
 
-    record Averages(double gapPercent, long evaluations, double time) {}
+    enum Mode {
+        OPTIMAL,
+        EVALUATIONS;
+
+        void printHeader() {
+            var header = switch (this) {
+                case OPTIMAL -> "n,p,mutation,objective,best,gap,hit_rate,evaluations,time";
+                case EVALUATIONS -> "not yet implemented";
+            };
+            System.out.println(header);
+        }
+
+        private static final String TAIL_TMP = "%.0f,%.6f,%.3f,%d,%d";
+
+        void printResults(Solution solution, double mutation, List<Result> results) {
+            var solutions = results.stream().map(Result::best).toList();
+            var hits = results.stream().filter(s -> Arrays.equals(solution.allocation, s.best.chromosome())).toList();
+
+            var tail = switch (hits.size()) {
+                case 0 -> {
+                    var best = -solutions.stream().max(Individual::compareTo).orElseThrow().fitness();
+                    var gap = Math.abs(1 - solution.objective / best);
+                    var time = results.stream().map(Result::time).reduce(0L, Long::sum) / results.size();
+                    yield TAIL_TMP.formatted(best, gap, 0.0, MAX_EVALUATIONS, time);
+                }
+                default -> {
+                    var best = -hits.getFirst().best.fitness();
+                    var hitRate = ((double) hits.size()) / results.size();
+                    var evaluations = hits.stream().map(Result::evaluations).reduce(0L, Long::sum) / hits.size();
+                    var time = hits.stream().map(Result::time).reduce(0L, Long::sum) / hits.size();
+                    yield TAIL_TMP.formatted(best, 0.0, hitRate, evaluations, time);
+                }
+            };
+
+            System.out.printf("%d,%d,%.2f,%.0f,%s%n", solution.n, solution.p, mutation, solution.objective, tail);
+        }
+
+    }
+
 
 }

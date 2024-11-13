@@ -25,7 +25,7 @@ just subproblem 10 3
 
 ## Running the algorithm
 
-To execute the algorithm a single time until the stop criterion is met you can just run 
+To execute the algorithm a single time until the stop criterion is met you can just run
 the recipe with N and P.
 
 ```sh
@@ -38,3 +38,16 @@ size.
 ```sh
 just run "10 3 --seed 123 --limit 10000 --population 15"
 ```
+
+## Benchmarking
+
+The project already contains a Benchmark class to evaluate the results with all the solutions
+using different mutations. The output of the benchmark will be a CSV with the average result
+of 30 executions of each n-p-mutation tuple. Just use the `benchmark` recipe with `optimal`
+to run benchmarks searching for optimal solution and nothing or `evals` to just run a number of
+evaluations:
+
+```sh
+just benchmark optimal | tee -a data/benchmark_${date +"Y-%m-%dT%H-%M"}.csv
+```
+

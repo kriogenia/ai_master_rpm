@@ -13,7 +13,7 @@ public class BestSolutionStop implements Stop<FixedPAssignedHub> {
     private boolean found;
 
     public BestSolutionStop(int p, Byte[] allocations) {
-        this.objective = new FixedPAssignedHub(p, Arrays.stream(allocations).map(x -> (byte)(x - 1)).toArray(Byte[]::new));
+        this.objective = new FixedPAssignedHub(p, allocations);
         this.found = false;
     }
 

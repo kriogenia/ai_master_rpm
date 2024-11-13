@@ -7,8 +7,8 @@ run ARGS:
   @mvn -q compile exec:java -Dexec.mainClass="uimp.muia.rpm.Run" -Dexec.args="{{ARGS}}"
 
 # Executes the benchmark
-benchmark:
-  @mvn -q compile exec:java -Dexec.mainClass="uimp.muia.rpm.Benchmark"
+benchmark MODE:
+  @mvn -q compile exec:java -Dmaven.compiler.compilerArgs="-g:none -XX:+AggresiveOpts" -Dexec.mainClass="uimp.muia.rpm.Benchmark" -Dexec.args="{{MODE}}"
 
 # Builds the generate.c executable
 build_gen:
