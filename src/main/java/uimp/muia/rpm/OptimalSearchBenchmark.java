@@ -133,10 +133,10 @@ public class OptimalSearchBenchmark {
 
     static class Params {
 
-        private static final List<Double> MUTATIONS = List.of(0.1, 0.25, 0.5);
+        private static final List<Double> MUTATIONS = List.of(0.5, 0.25, 0.1);
         private static final List<Integer> POPULATIONS= List.of(10, 20, 25, 40, 50, 75, 100);
 
-        private static final long MAX_EVALUATIONS_START = 0x2000;    // 8x1024
+        private static final long MAX_EVALUATIONS_START = 0x1000;    // 4x1024
         private static final long MAX_EVALUATIONS_LIMIT = 0x100000;  // 1024x1024
 
         private long maxEvaluations;
@@ -172,9 +172,9 @@ public class OptimalSearchBenchmark {
             if (++mutation < MUTATIONS.size()) {
                 return;
             }
-            if (maxEvaluations * 2 <= MAX_EVALUATIONS_LIMIT) {
+            if (maxEvaluations * 4 <= MAX_EVALUATIONS_LIMIT) {
                 mutation = 0;
-                maxEvaluations *= 2;
+                maxEvaluations *= 4;
                 return;
             }
             if (++population < POPULATIONS.size()) {

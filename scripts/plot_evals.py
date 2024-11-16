@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 df = pd.read_csv("../data/benchmark_evals_2024-11-14T09-27.csv")
-df = df.iloc[:-19]
 
 print(df)
 
@@ -32,7 +31,7 @@ for i, x in enumerate(["p", "n"]):
     agg = aggregate(x)
     plot(i, agg, x)
     axs[i].set_xlabel(x)
-    x_range = range(10, 50, 10) if x == "n" else range(2, 6, 1)
+    x_range = [10, 20, 25, 40, 50] if x == "n" else range(2, 6, 1)
     print(x_range)
     axs[i].set_xticks(x_range)
     axs[i].grid(True)
