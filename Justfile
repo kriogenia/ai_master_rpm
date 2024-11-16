@@ -6,9 +6,13 @@ or-library := resources / "or-library"
 run ARGS:
   @mvn -q compile exec:java -Dexec.mainClass="uimp.muia.rpm.Run" -Dexec.args="{{ARGS}}"
 
-# Executes the benchmark
-benchmark MODE:
-  @mvn -q compile exec:java -Dmaven.compiler.compilerArgs="-g:none -XX:+AggresiveOpts" -Dexec.mainClass="uimp.muia.rpm.Benchmark" -Dexec.args="{{MODE}}"
+# Executes the benchmark for max evaluations
+optimal:
+  @mvn -q compile exec:java -Dmaven.compiler.compilerArgs="-g:none -XX:+AggresiveOpts" -Dexec.mainClass="uimp.muia.rpm.OptimalSearchBenchmark"
+
+# Executes the benchmark for max evaluations
+max_evals:
+  @mvn -q compile exec:java -Dmaven.compiler.compilerArgs="-g:none -XX:+AggresiveOpts" -Dexec.mainClass="uimp.muia.rpm.MaxEvaluationsBenchmark"
 
 # Builds the generate.c executable
 build_gen:

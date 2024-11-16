@@ -4,6 +4,7 @@
 \usepackage{amsmath}
 \usepackage{array}
 \usepackage{authblk}
+\usepackage{caption}
 \usepackage[utf8]{inputenc}
 \usepackage{mathtools}
 \usepackage{nameref}
@@ -181,21 +182,65 @@ to find which probability performed the best.
 
 \subsection{Replacement}
 
+To perform the replacement that generates the population of the next interaction a simple
+elitist approach was followed. Adding the new child to the current population in the place
+of the current worst individual if it has a better fitness.
+
 \section{Computational results\label{s:computational_results}}
 
-\subsection{Analysis of performance searching the optimal solution}
+% TODO
+%
+% 30 evals
+
+\subsection{Performance in a fixed number of evaluations\label{ss:benchmark_evaluations}}
+
+In this analysis, the algorithm was executed with a fixed number of maximum evaluations: $100000$
+for each $(n,p)$ problem and \emph{mutation probability} combination. The population for each
+problem was set to $n$. The fitness of the best solution, the gap between this fitness and the best
+solution, and the consumed time was recorded for each of this executions.
+
+The aim of this benchmark is to showcase the overall results for the different mutation probabilities.
+This way we can discern the best value or range to specify in the GA when it's executed in a restricted
+timeframe and the optimal is not required.  Table \ref{tb:evals_benchmark}
+contains the data for the solutions up until $n=40$. The data containing the solutions for size $50$
+can be found in the \code{data/benchmark\_evals\_2024-11-14T09-27.csv} file at the repository\cite{SotoEstevezGA2024}.
+
+\input{tables/benchmark_evaluations.tex}
+
+From this data two aggregations were conducted to analyze the behavior of \emph{mutation} for each
+different problem size. The two aggregations were groupings by $(p,mutation)$ and $(n,mutation)$.
+The Figure \ref{fig:mutation_vs_gap}
+shows a comparison between $n$ and $p$ against the resulting mean $gap$ with the four different mutations.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.9\textwidth]{figures/mutation_vs_gap.png}
+  \caption{p vs. Gap and n vs. Gap based on the mutation probability}
+  \label{fig:mutation_vs_gap}
+\end{figure}
+
+From this result we can see that overall the highest mutation probability ($0.5$) gets the results
+closer to the optimal solution, except on the problems were either $n$ or $p$ are minimal. In these
+cases the minimum mutation ($0.05$) comes on top for $n=10$ and all the mutation values get almost
+the same gap for $p=2$. Outside of these minimal problems were the set of solutions is not big
+enough to get an advantage from a diverse population, the lower mutation probability performs
+significantly worse, specially as $n$ and $p$ increases.
+
+\subsection{Performance searching the optimal solution\label{ss:benchmark_optimal}}
+
+During this benchmark the algorithm was executed until the solution given by the examples
+was matched. A hard limit of one million evaluations was set to evade 
 
 Refer to Table \ref{tb:optimal_benchmark}.
 
 \input{tables/benchmark_optimal.tex}
 
-\subsection{Analysis of performance in a fixed number of evaluations}
 
-Refer to Table \ref{tb:evals_benchmark}
-
-\input{tables/benchmark_evaluations.tex}
+% todo name size of the examples
 
 \section{Conclusion}
+
+% maybe the mutation algorithm didnt cause enough variance
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}

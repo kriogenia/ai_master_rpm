@@ -1,8 +1,8 @@
 # Genetic Algorithm for Hub Location Problem
 
+
 > [!TODO]
 > Describe the problem and project
-
 > [!NOTE]
 > This project uses `just` (an alternative of `make`) to ease
 > the commands to execute the project. If you don't want to install
@@ -41,13 +41,5 @@ just run "10 3 --seed 123 --limit 10000 --population 15"
 
 ## Benchmarking
 
-The project already contains a Benchmark class to evaluate the results with all the solutions
-using different mutations. The output of the benchmark will be a CSV with the average result
-of 30 executions of each n-p-mutation tuple. Just use the `benchmark` recipe with `optimal`
-to run benchmarks searching for optimal solution and nothing or `evals` to just run a number of
-evaluations:
-
-```sh
-just benchmark optimal | tee -a data/benchmark_${date +"Y-%m-%dT%H-%M"}.csv
-```
+> [!TODO]
 
