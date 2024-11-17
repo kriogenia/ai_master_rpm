@@ -2,18 +2,18 @@
 
 The problem \code{USApHMP-Q} is the quadratic linear algorithm of O'Kelly (1997)\cite{OKelly1987}
 reformulated by Ernst \& Krishnamoorthy (1996)\cite{Ernst1996} to accomodate the new costs
-introduced on their problem. Let Z be a matrix \emph{nxn} indicating which nodes of \emph{N} are
-allocated to which hubs. The total cost of a certain allocation \emph{Z} is the sum of the
-delivery cost every path \emph{i,j}, being the delivery cost of a path the product of the
-flow between the nodes and the sum of each step of the delivery.
+introduced on their problem. Let $Z$ be a matrix $nxn$ indicating which nodes of $N$ are allocated
+to which hubs. The total cost of a certain allocation $Z$ is the sum of the delivery cost every
+path $i,j$, being the delivery cost of a path the product of the flow between the nodes and the 
+sum of each step of the delivery.
 
-\break
+\hfill
 
 \textbf{Notation:}
 
-\wij: flow between the nodes \emph{i} and \emph{j}
+$W_{ij}$: flow between the nodes $i$ and $j$
 
-\point{d}{ij}: euclidean distance between the nodes \emph{i} and \emph{j} 
+$d_{ij}$: euclidean distance between the nodes $i$ and $j$
 
 $\chi$: collection cost
 
@@ -40,11 +40,10 @@ Z_{ij} = \begin{cases}
                     &                & \quad Z_{ik} &\in \{0,1\} & \quad & \forall i, k \in N \label{eq:prev_alloc}
 \end{alignat}
 
-In this problem \eqref{p_hubs} sets the \ip-hub part of the problem
-ensuring that there's only \ip hubs. \eqref{eq:single_alloc} ensures the single
-allocation as each column of \emph{Z} can only sum 1. \eqref{eq:only_hubs} prevents
-allocations to non-hub nodes. And \eqref{eq:prev_alloc} asserts that hub
-nodes are not allocated to other nodes.
+In this problem \eqref{p_hubs} sets the $p$-hub part of the problem ensuring that there's
+only $p$ hubs. \eqref{eq:single_alloc} ensures the single allocation as  each column of
+$Z$ can only sum 1. \eqref{eq:only_hubs} prevents allocations to non-hub nodes. And
+\eqref{eq:prev_alloc} asserts that hub nodes are not allocated to other nodes.
 
 Aside from this formulation, Ernst \& Krishnamoorthy present two other versions in the
 same paper\cite{Ernst1996}. To see other formulations around the same or similar problems
@@ -55,12 +54,10 @@ refer to the survey conducted by Farahani (2013)\cite{Farahani2013}.
 The fitness function used in this project uses the \code{USAp-HMP-Q} function as its basis.
 In order to transform it into a maximization function it's negated. As we'll be using as a
 chromosome a valid and complete solution (see \ref{ss:chromosome}) 
-where each node is already allocated to one of \emph{p} nodes the equation can be greatly
-simplified as there's no need for the two summatories over \emph{k} and \emph{l} to find the
-allocated nodes of \emph{i} and \emph{j}. Letting \point{S}{i} $\in$ \{1,\dots,n\} $\forall$ i be an
-array of size \emph{n} where \point{S}{i} is the assigned hub of \emph{i}, the fitness
-function to maximize is as follows:
-
+where each node is already allocated to one of $p$ nodes the equation can be greatly simplified
+as there's no need for the two summatories over $k$ and $l$ to find the allocated nodes of $i$
+and $j$. Letting $S_{i} \in \{1,\dots,n\} \forall i$ be an array of size $n$ where $S_{i}$
+is the assigned hub of $i$, the fitness function to maximize is:
 
 \[
   \text{Max.} \quad 1 - \sum_{i \in n} \sum_{j \in n} W_{ij} (\chi d_{iS_{i}} + \alpha d_{S_{i}S_{j}} + \delta d_{jS_{j}})
@@ -72,10 +69,6 @@ function to maximize is as follows:
    & |U(S)| = p \label{eq:ensure_p}
 \end{alignat}
 
-In this case aside from the possible values or the length or \emph{S} the only requirement
-the function must subject to is that the total of uniques values of \emph{S} is \emph{p}
+In this case aside from the possible values or the length or $S$ the only requirement
+the function must subject to is that the total of uniques values of $S$ is $p$
 as it's enforced with Equation (\ref{eq:ensure_p}).
-
-% todo think possible further restrictions?
-
-

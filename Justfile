@@ -26,9 +26,6 @@ subproblem N P: build_gen
 # Runs the project in debug mode
 debug $MAVEN_OPTS="-ea":
   @mvn compile exec:java -Dexec.mainClass="uimp.muia.rpm.Run" -Dexec.args="-ea" -Dorg.slf4j.simpleLogger.defaultLogLevel=TRACE
-
-read:
-  @latexmk -pdf -pv -outdir=out doc/main.tex
   
 clean:
   @rm out/*

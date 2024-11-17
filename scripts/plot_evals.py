@@ -6,6 +6,14 @@ df = pd.read_csv("../data/benchmark_evals_2024-11-14T09-27.csv")
 print(df)
 
 
+print(f"Median GAP: {df['gap'].median() * 100}%")
+print(f"Max GAP: {df['gap'].max() * 100}%")
+
+best_mut_subset = df[df["mutation"] == 0.5]
+print(f"Median GAP: {best_mut_subset['gap'].median() * 100}%")
+print(f"Max GAP: {best_mut_subset['gap'].max() * 100}%")
+
+
 def aggregate(column: str):
     agg = df.groupby([column, "mutation"]).mean().reset_index()
     agg = agg.iloc[:, [1, 0, 5, 6]]
@@ -32,7 +40,6 @@ for i, x in enumerate(["p", "n"]):
     plot(i, agg, x)
     axs[i].set_xlabel(x)
     x_range = [10, 20, 25, 40, 50] if x == "n" else range(2, 6, 1)
-    print(x_range)
     axs[i].set_xticks(x_range)
     axs[i].grid(True)
 
