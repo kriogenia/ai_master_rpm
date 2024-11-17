@@ -4,8 +4,9 @@ import uimp.muia.rpm.ea.EvolutionaryAlgorithm;
 import uimp.muia.rpm.ea.Stop;
 import uimp.muia.rpm.ea.individual.FixedPAssignedHub;
 
-import java.util.Arrays;
-
+/**
+ * Stops the algorithm when a solution matching the given one is found
+ */
 public class BestSolutionStop implements Stop<FixedPAssignedHub> {
 
     private final FixedPAssignedHub objective;

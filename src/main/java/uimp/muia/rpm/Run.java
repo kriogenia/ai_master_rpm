@@ -31,9 +31,6 @@ public class Run {
         }
 
         var phub = SubProblem.fromFile(Path.of(subproblem.toURI()));
-//        var costs = NodesProperties.costs(NodesProperties.Type.LOOSE, 10);
-//        var caps = NodesProperties.capacities(NodesProperties.Type.LOOSE, 10);
-//        var problem = new RandomAssignedHub(phub, costs, caps);
         var problem = new USApHMP(phub);
         LOG.atInfo().log("Loaded and instantiated problem {}", file);
 
@@ -42,8 +39,6 @@ public class Run {
                 .withMaxEvaluations(args.limit())
                 .withSelector(new BinaryTournament<>())
                 .withCrossover(new FixedPSinglePointCrossover())
-//                .withCrossover(new SinglePointCrossover<>())
-//                .withMutation(new RAHMutation(1.0 / phub.n()))
                 .withMutation(new ReassignHubMutation(1.0 / phub.n()))
                 .withReplacement(new ElitistReplacement<>());
         args.seed().ifPresent(builder::withSeed);

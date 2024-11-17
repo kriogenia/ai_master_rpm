@@ -4,6 +4,10 @@ import uimp.muia.rpm.ea.EvolutionaryAlgorithm;
 import uimp.muia.rpm.ea.Individual;
 import uimp.muia.rpm.ea.Stop;
 
+/**
+ * Stops the algorithm when the maximum number of evaluations is reached
+ * @param <I> type of Individual
+ */
 public class MaxEvaluationsStop<I extends Individual> implements Stop<I> {
 
     private final long max;

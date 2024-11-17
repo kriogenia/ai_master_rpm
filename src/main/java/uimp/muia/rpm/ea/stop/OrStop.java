@@ -7,6 +7,10 @@ import uimp.muia.rpm.ea.Stop;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Composite Stop to stop the algorithm when any of the given Stops calls for a halt
+ * @param <I> type of Individual
+ */
 public class OrStop<I extends Individual> implements Stop<I> {
 
     private final List<Stop<I>> stops;

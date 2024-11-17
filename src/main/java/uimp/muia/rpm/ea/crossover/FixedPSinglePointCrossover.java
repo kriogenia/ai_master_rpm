@@ -11,9 +11,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-
 /**
- * Version of a single point crossover that corrects the chromosome of the child if it's number of hubs goes above
+ * Version of a single point crossover that corrects the chromosome of the child if its number of hubs goes above
  * or below `p`.
  */
 public class FixedPSinglePointCrossover implements Crossover<FixedPAssignedHub>, Stochastic {

@@ -22,6 +22,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
+/**
+ * Executes the algorithm a fixed number of times and generates the benchmark stats
+ */
 public class MaxEvaluationsBenchmark {
 
     private static final int BASE_SEED = 19;

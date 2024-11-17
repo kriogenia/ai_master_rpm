@@ -23,7 +23,7 @@ public class SinglePointCrossover<I extends Individual> implements Crossover<I>,
             child.chromosome()[i] = right.chromosome()[i];
         }
         //noinspection unchecked
-        return (I) child; // ensure to be cast-able to same type as the parents
+        return (I) child; // ensured to be cast-able to same type as the parents
     }
 
     @Override

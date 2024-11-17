@@ -6,6 +6,9 @@ import uimp.muia.rpm.ea.individual.FixedPAssignedHub;
 import java.util.Random;
 import java.util.stream.IntStream;
 
+/**
+ * p-hub problem implementation with a fitness function based on USApHMP
+ */
 public class USApHMP implements Problem<FixedPAssignedHub> {
 
     private final SubProblem scenario;

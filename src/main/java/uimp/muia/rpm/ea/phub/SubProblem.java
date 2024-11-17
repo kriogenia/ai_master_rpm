@@ -6,6 +6,10 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
+/**
+ * Represents the certain p-hub subproblem, containing all the logic given in the file and certain functions providing
+ * calculated info from this data
+ */
 public final class SubProblem {
 
     final Coordinates[] nodes; // visibleForTest

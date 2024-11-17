@@ -20,6 +20,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
+/**
+ * Executes the algorithm auto-scaling the parameters while searching for the exact solution and generates the
+ * benchmarking stats
+ */
 public class OptimalSearchBenchmark {
 
     private static final int BASE_SEED = 19;

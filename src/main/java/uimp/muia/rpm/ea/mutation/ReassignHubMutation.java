@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uimp.muia.rpm.ea.Mutation;
 import uimp.muia.rpm.ea.Stochastic;
-import uimp.muia.rpm.ea.crossover.FixedPSinglePointCrossover;
 import uimp.muia.rpm.ea.individual.FixedPAssignedHub;
 
 import java.util.Arrays;
